@@ -1,14 +1,16 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.Extensions.Configuration;
+using System.Net.Http.Json;
+using System.Text.Json;
 using UniLMS.Application.DTOs.Chat;
 using UniLMS.Application.Interfaces.Services;
 using UniLMS.Application.Repositories.ChatRepository;
 
 namespace UniLMS.Infrastructure
 {
-    public class ChatService(IChatRepository _chatRepository) : IChatService
+    public class ChatService(
+        IChatRepository _chatRepository,
+        HttpClient _httpClient,
+        IConfiguration _configuration) : IChatService
     {
         public async Task<ChatResponseDTO> GetResponseAsync(ChatRequestDTO request, string userId)
         {
@@ -17,9 +19,9 @@ namespace UniLMS.Infrastructure
             var userCourses = await _chatRepository.GetUserCoursesAsync(userId);
             var userGrades = await _chatRepository.GetUserGradesAsync(userId);
 
-            string courseText = courses.Any() ? string.Join(",", courses.Select(c => c.Name)) 
+            string courseText = courses.Any() ? string.Join(",", courses.Select(c => c.Name))
                 : "Hələ ki kurs mövcud deyil.";
-            string materialText = materials.Any() ? string.Join("," , materials.Select(m => m.Title))
+            string materialText = materials.Any() ? string.Join(",", materials.Select(m => m.Title))
                 : "Hələ ki material mövcud deyil.";
 
             string userCoursesText = userCourses.Any() ? string.Join(",", userCourses)
@@ -42,6 +44,7 @@ namespace UniLMS.Infrastructure
                 "Həmişə yalnız aşağıdakı fərdi məlumatlara əsaslan:\n\n" +
                 databaseContext;
 
+            
             string aiReply = await GetAIResponseFromProviderAsync(systemPrompt, request.Message);
 
             return new ChatResponseDTO
@@ -49,14 +52,54 @@ namespace UniLMS.Infrastructure
                 Reply = aiReply,
                 Timestamp = DateTime.UtcNow
             };
-
         }
 
-        private async Task<string> GetAIResponseFromProviderAsync(string systemPromt, string userMessage)
+        private async Task<string> GetAIResponseFromProviderAsync(string systemPrompt, string userMessage)
         {
-            await Task.CompletedTask;
+            
+            string apiKey = _configuration["Gemini:ApiKey"]
+                ?? throw new InvalidOperationException("Gemini API Key tapılmadı.");
 
-            return $"Salam! 😊 Bazadakı məlumatlara əsasən sualını cavablandırıram: '{userMessage}'";
+            string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={apiKey}";
+
+            var requestBody = new
+            {
+                contents = new[]
+                {
+                    new
+                    {
+                        parts = new[]
+                        {
+                            new { text = $"{systemPrompt}\n\nİstifadəçinin sualı: {userMessage}" }
+                        }
+                    }
+                }
+            };
+
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync(url, requestBody);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return "Üzr istəyirəm, hazırda süni intellekt xidmətinə qoşulmaq mümkün olmadı.";
+                }
+
+                var jsonResponse = await response.Content.ReadFromJsonAsync<JsonElement>();
+
+                // Gemini JSON cavab strukturundan mətnin çıxarılması
+                string replyText = jsonResponse
+                    .GetProperty("candidates")[0]
+                    .GetProperty("content")
+                    .GetProperty("parts")[0]
+                    .GetProperty("text").GetString()
+                    ?? "Cavab tapılmadı.";
+
+                return replyText;
+            }
+            catch(Exception)
+            {
+                return "Sorğu yerinə yetirilərkən texniki xəta baş verdi.";
+            }
         }
     }
 }

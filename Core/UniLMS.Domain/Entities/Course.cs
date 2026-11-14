@@ -7,16 +7,16 @@ namespace UniLMS.Domain.Entities
 {
     public class Course : BaseEntity
     {
-        public string Name { get; set; }    
+        public string Name { get; set; } = string.Empty;
 
-        public string Code { get; set; }
+        public string Code { get; set; } = string.Empty;
 
         public string? Description { get; set; }
 
         public Guid CafedraId { get; set; }
 
-        public Cafedra Cafedra { get; set; }
+        public Cafedra Cafedra { get; set; } = null!;
 
-        public ICollection<Speciality> Specialities { get; set; }
+        public ICollection<Speciality> Specialities { get; set; } = new List<Speciality>();
     }
 }

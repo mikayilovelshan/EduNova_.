@@ -7,8 +7,10 @@ using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Reflection;
 using System.Text;
+using UniLMS.Application.Interfaces.Services;
 using UniLMS.Application.ServiceRegistration;
 using UniLMS.Domain.Entities;
+using UniLMS.Infrastructure;
 using UniLMS.Persistence.Contexts;
 using UniLMS.Persistence.ServiceRegistration;
 using UniLMS.WebApi.Middlewares;
@@ -35,6 +37,7 @@ builder.Services.AddCourseSchedulePersistenceService();
 builder.Services.AddAttendancePersistenceService();
 builder.Services.AddExamResultPersistenceService();
 builder.Services.AddFileServerPersistenceService();
+builder.Services.AddHttpClient<IChatService, ChatService>();
 builder.Services.AddApplicationService();
 
 builder.Services.AddIdentity<AppUser, IdentityRole<Guid>>(options =>
@@ -68,6 +71,16 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173", "https://lovable.dev") 
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 app.UseGlobalExceptionMiddleware();
@@ -88,6 +101,7 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+app.UseCors("AllowReactApp");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

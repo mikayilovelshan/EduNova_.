@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,8 +11,7 @@ using UniLMS.Domain.Entities;
 namespace UniLMS.Persistence.Services
 {
     public class AuthService(UserManager<AppUser> _userManager,
-        ITokenService _tokenService,
-        IMapper _mapper) : IAuthService
+        ITokenService _tokenService) : IAuthService
     {
         public async Task<IDataResult<TokenResponseDTO>> Login(LoginDTO model)
         {

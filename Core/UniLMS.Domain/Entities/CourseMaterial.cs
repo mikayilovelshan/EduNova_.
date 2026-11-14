@@ -7,18 +7,16 @@ namespace UniLMS.Domain.Entities
 {
     public class CourseMaterial : BaseEntity
     {
+        public string Title { get; set; } = string.Empty;
 
-        public string Title { get; set; }
+        public string Description { get; set; } = string.Empty;
 
-        public string Description { get; set; }
+        public string FilePath { get; set; } = string.Empty;
 
-        public string FilePath { get; set; }
-
-        public string FileName { get; set; }
+        public string FileName { get; set; } = string.Empty;
 
         public Guid CourseId { get; set; }
 
-        public Course Course { get; set; }
-
+        public Course Course { get; set; } = null!;
     }
 }
