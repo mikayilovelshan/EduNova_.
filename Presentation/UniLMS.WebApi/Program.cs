@@ -11,6 +11,8 @@ using UniLMS.Application.Interfaces.Services;
 using UniLMS.Application.ServiceRegistration;
 using UniLMS.Domain.Entities;
 using UniLMS.Infrastructure;
+using UniLMS.Application.Repositories.ChatRepository;
+using UniLMS.Persistence.Repositories.ChatRepository;
 using UniLMS.Persistence.Contexts;
 using UniLMS.Persistence.ServiceRegistration;
 using UniLMS.WebApi.Middlewares;
@@ -38,9 +40,10 @@ builder.Services.AddAttendancePersistenceService();
 builder.Services.AddExamResultPersistenceService();
 builder.Services.AddFileServerPersistenceService();
 builder.Services.AddHttpClient<IChatService, ChatService>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
 builder.Services.AddApplicationService();
 
-builder.Services.AddIdentity<AppUser, IdentityRole<Guid>>(options =>
+builder.Services.AddIdentity<AppUser, AppRole>(options =>
 {
     options.Password.RequiredLength = 6;
     options.Password.RequireNonAlphanumeric = false;
@@ -50,7 +53,8 @@ builder.Services.AddIdentity<AppUser, IdentityRole<Guid>>(options =>
     options.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<AppDbContext>()
-.AddDefaultTokenProviders();
+.AddDefaultTokenProviders()
+.AddRoles<AppRole>(); 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -66,7 +70,9 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!)),
+         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+             builder.Configuration["Jwt:SecretKey"]
+             ?? throw new InvalidOperationException("Jwt:SecretKey must be configured through user secrets or an environment variable."))),
         ClockSkew = TimeSpan.Zero 
     };
 });
@@ -75,7 +81,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "https://lovable.dev") 
+        policy.WithOrigins("http://localhost:8080", "http://localhost:5032", "https://lovable.dev") // <--- "http://localhost:8080" bura əlavə olunur
               .AllowAnyHeader()
               .AllowAnyMethod();
     });

@@ -30,10 +30,21 @@ namespace UniLMS.Persistence.Contexts
 
         public DbSet<CourseMaterial> CourseMaterials { get; set; }
 
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            UpdateAuditFields();
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            var entries = ChangeTracker.Entries<BaseEntity>();
+            UpdateAuditFields();
+            return base.SaveChangesAsync(cancellationToken);
+        }
 
+        private void UpdateAuditFields()
+        {
+            var entries = ChangeTracker.Entries<BaseEntity>();
             foreach (var entry in entries)
             {
                 if (entry.State == EntityState.Added)
@@ -45,8 +56,6 @@ namespace UniLMS.Persistence.Contexts
                     entry.Entity.UpdatedDate = DateTime.UtcNow;
                 }
             }
-
-            return base.SaveChangesAsync(cancellationToken);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -62,6 +71,18 @@ namespace UniLMS.Persistence.Contexts
 
 
             modelBuilder.Entity<Faculty>().HasQueryFilter(f => !f.IsDeleted);
+            modelBuilder.Entity<Cafedra>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<Speciality>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<Course>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<Group>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<CourseOffering>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<CourseSchedule>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<Semester>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<Student>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<Teacher>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<ExamResult>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<Attendance>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<CourseMaterial>().HasQueryFilter(x => !x.IsDeleted);
 
             modelBuilder.Entity<Faculty>(entity =>
             {
@@ -139,6 +160,9 @@ namespace UniLMS.Persistence.Contexts
                 entity.Property(x => x.Code)
                     .HasMaxLength(30)
                     .IsRequired();
+
+                entity.Property(x => x.Description)
+                    .HasMaxLength(500);
 
                 entity.HasIndex(x => x.Code)
                     .IsUnique();

@@ -40,7 +40,7 @@ namespace UniLMS.Persistence.Repositories
         {
             var query = Table.Where(expression);
 
-            if (tracking)
+            if (!tracking)
                 query = query.AsNoTracking();
 
             return query;

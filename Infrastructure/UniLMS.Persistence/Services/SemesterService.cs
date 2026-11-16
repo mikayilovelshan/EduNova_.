@@ -23,6 +23,9 @@ namespace UniLMS.Persistence.Services
             if (model.StartDate >= model.EndDate)
                 return new ErrorResult("Semestrin başlanğıc tarixi bitiş tarixindən əvvəl olmalıdır");
 
+            if (await _semesterRead.GetWhere(s => s.Name == model.Name, tracking: false).AnyAsync())
+                return new ErrorResult($"{model.Name} adlı semestr artıq mövcuddur.");
+
             if(model.IsActive == true)
             {
                 var activeSemester = await _semesterRead.GetWhere(s => s.IsActive == true, tracking: true).FirstOrDefaultAsync();
@@ -167,6 +170,9 @@ namespace UniLMS.Persistence.Services
 
             if (model.StartDate >= model.EndDate)
                 return new ErrorResult("Semestrin başlanğıc tarixi bitiş tarixindən əvvəl olmalıdır.");
+
+            if (await _semesterRead.GetWhere(s => s.Name == model.Name && s.Id != model.Id, tracking: false).AnyAsync())
+                return new ErrorResult($"{model.Name} adlı semestr artıq mövcuddur.");
 
             var semester = await _semesterRead.GetByIdAsync(model.Id, tracking : true);
 

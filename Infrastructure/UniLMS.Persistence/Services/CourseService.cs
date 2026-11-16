@@ -74,7 +74,7 @@ namespace UniLMS.Persistence.Services
             var courses = await _courseRead.GetWhere(x => ids.Contains(x.Id), tracking: true)
                 .ToListAsync();
 
-            if (courses == null)
+            if (!courses.Any())
                 return new ErrorResult("Silmək üçün heç bir kurs tapılmadı");
             _courseWrite.HardDeleteRange(courses);
             await _courseWrite.SaveAsync();
@@ -95,7 +95,7 @@ namespace UniLMS.Persistence.Services
         public async Task<IResult> SoftDeleteRangeAsync(List<Guid> ids)
         {
             var courses = await _courseRead.GetWhere(d => ids.Contains(d.Id), tracking: true).ToListAsync();
-            if (courses == null)
+            if (!courses.Any())
                 return new ErrorResult("Silmək üçün heç bir kurs tapılmadı");
             _courseWrite.SoftDeleteRange(courses);
             await _courseWrite.SaveAsync();
@@ -122,7 +122,7 @@ namespace UniLMS.Persistence.Services
                 return new ErrorResult("Uyğun kurs mövcud deyil");
 
             bool codeExists = await _courseRead
-                .GetWhere(x => x.Code == model.Code, tracking: false)
+                .GetWhere(x => x.Code == model.Code && x.Id != model.Id, tracking: false)
                 .AnyAsync();
 
             if (codeExists)

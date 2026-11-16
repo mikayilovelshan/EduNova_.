@@ -14,6 +14,7 @@ namespace UniLMS.Persistence.ServiceRegistration
         public static void AddAttendancePersistenceService(this IServiceCollection services)
         {
             services.AddScoped<IAttendanceService, AttendanceService>();
+            services.AddScoped<IAcademicOwnershipService, AcademicOwnershipService>();
             services.AddScoped<IAttendanceReadRepository, AttendanceReadRepository>();
             services.AddScoped<IAttendanceWriteRepository, AttendanceWriteRepository>();
         }

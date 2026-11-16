@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UniLMS.Application.DTOs.Cafedras;
 using UniLMS.Application.DTOs.Faculties;
@@ -8,6 +9,7 @@ namespace UniLMS.WebApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class CafedraController(ICafedraService _cafedraService) : ControllerBase
     {
         [HttpPost("create")]
@@ -19,6 +21,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update([FromBody] UpdateCafedraDTO model)
         {
             var result = await _cafedraService.UpdateAsync(model);
@@ -41,6 +44,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpDelete("soft")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> SoftDelete(List<Guid> ids)
         {
             var result = await _cafedraService.SoftDeleteRangeAsync(ids);
@@ -48,6 +52,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpDelete("hard")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> HardDelete(List<Guid> ids)
         {
             var result = await _cafedraService.HardDeleteRangeAsync(ids);
@@ -55,6 +60,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpPost("restore")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Restore(Guid id)
         {
             var result = await _cafedraService.RestoreAsync(id);

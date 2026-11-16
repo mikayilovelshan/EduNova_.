@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UniLMS.Application.DTOs.Faculties;
 using UniLMS.Application.Interfaces.Services;
@@ -7,6 +8,7 @@ namespace UniLMS.WebApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class FacultiesController(IFacultyService _facultyService) : ControllerBase
     {
         [HttpGet]
@@ -24,6 +26,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateFacultyDTO model)
         {
             var result = await _facultyService.CreateAsync(model);
@@ -31,6 +34,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateFacultyDTO model)
         {
             var result = await  _facultyService.UpdateAsync(model);
@@ -38,6 +42,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpDelete("soft")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> SoftDelete([FromBody] List<Guid> ids)
         {
             var result = await _facultyService.SoftDeleteRangeAsync(ids);
@@ -45,6 +50,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpDelete("hard")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> HardDelete([FromBody] List<Guid> ids)
         {
             var result = await _facultyService.HardDeleteRangeAsync(ids);
@@ -52,6 +58,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpPost("restore")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Restore(Guid id)
         {
             var result = await _facultyService.RestoreAsync(id);

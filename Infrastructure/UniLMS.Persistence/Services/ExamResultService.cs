@@ -62,10 +62,18 @@ namespace UniLMS.Persistence.Services
             return new SuccessResult("İmtahan qiymətləri uğurla əalvə edildi");
         }
         
-        public async Task<IDataResult<List<GetExamResultDTO>>> GetAllAsync()
+        public async Task<IDataResult<List<GetExamResultDTO>>> GetAllAsync(Guid? studentAppUserId = null, Guid? teacherAppUserId = null)
         {
-            var examResults = await _readExamResult.GetAll(tracking: false)
+            var query = _readExamResult.GetAll(tracking: false);
+
+            if (studentAppUserId.HasValue)
+                query = query.Where(x => x.Student.AppUserId == studentAppUserId.Value);
+            else if (teacherAppUserId.HasValue)
+                query = query.Where(x => x.CourseOffering.Teacher.AppUserId == teacherAppUserId.Value);
+
+            var examResults = await query
                 .Include(x => x.Student)
+                    .ThenInclude(s => s.AppUser)
                 .Include(x => x.CourseOffering)
                     .ThenInclude(x => x.Course)
                 .ToListAsync();
@@ -78,10 +86,18 @@ namespace UniLMS.Persistence.Services
             return new SuccessDataResult<List<GetExamResultDTO>>(dtos);
         }
 
-        public async Task<IDataResult<GetExamResultDTO>> GetByIdAsync(Guid id)
+        public async Task<IDataResult<GetExamResultDTO>> GetByIdAsync(Guid id, Guid? studentAppUserId = null, Guid? teacherAppUserId = null)
         {
-            var examResult = await _readExamResult.GetWhere(x => x.Id == id, tracking : false)
+            var query = _readExamResult.GetWhere(x => x.Id == id, tracking: false);
+
+            if (studentAppUserId.HasValue)
+                query = query.Where(x => x.Student.AppUserId == studentAppUserId.Value);
+            else if (teacherAppUserId.HasValue)
+                query = query.Where(x => x.CourseOffering.Teacher.AppUserId == teacherAppUserId.Value);
+
+            var examResult = await query
                 .Include(x => x.Student)
+                    .ThenInclude(s => s.AppUser)
                 .Include(x => x.CourseOffering)
                     .ThenInclude(x => x.Course)
                 .FirstOrDefaultAsync();

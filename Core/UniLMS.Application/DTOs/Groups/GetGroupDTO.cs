@@ -12,6 +12,8 @@ namespace UniLMS.Application.DTOs.Groups
 
         public string SpecialityName { get; set; }
 
+        public Guid SpecialityId { get; set; }
+
         public List<GroupStudentDTO> Students { get; set; }
     }
 

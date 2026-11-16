@@ -379,6 +379,47 @@ namespace UniLMS.Persistence.Migrations
                     b.ToTable("Courses");
                 });
 
+            modelBuilder.Entity("UniLMS.Domain.Entities.CourseMaterial", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CourseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("CourseMaterials");
+                });
+
             modelBuilder.Entity("UniLMS.Domain.Entities.CourseOffering", b =>
                 {
                     b.Property<Guid>("Id")
@@ -625,6 +666,10 @@ namespace UniLMS.Persistence.Migrations
                     b.Property<int>("Degree")
                         .HasColumnType("int");
 
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<Guid?>("FacultyId")
                         .HasColumnType("uniqueidentifier");
 
@@ -835,6 +880,17 @@ namespace UniLMS.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Cafedra");
+                });
+
+            modelBuilder.Entity("UniLMS.Domain.Entities.CourseMaterial", b =>
+                {
+                    b.HasOne("UniLMS.Domain.Entities.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Course");
                 });
 
             modelBuilder.Entity("UniLMS.Domain.Entities.CourseOffering", b =>

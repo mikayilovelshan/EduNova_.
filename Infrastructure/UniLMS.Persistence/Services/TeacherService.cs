@@ -33,14 +33,28 @@ namespace UniLMS.Persistence.Services
             if(!result.Succeeded)
                 return new ErrorResult("Müəllim yaradıla bilmədi!");
 
-            var teacher = _mapper.Map<Teacher>(model);
+            var roleResult = await _userManager.AddToRoleAsync(appUser, "Teacher");
+            if (!roleResult.Succeeded)
+            {
+                await _userManager.DeleteAsync(appUser);
+                return new ErrorResult("Müəllim rolu təyin edilə bilmədi.");
+            }
 
-            teacher.AppUserId = appUser.Id;
-            teacher.ScientificDegree = model.ScientificDegree;
-            teacher.CafedraId = model.CafedraId;
+            try
+            {
+                var teacher = _mapper.Map<Teacher>(model);
+                teacher.AppUserId = appUser.Id;
+                teacher.ScientificDegree = model.ScientificDegree;
+                teacher.CafedraId = model.CafedraId;
 
-            await _teacherWrite.AddAsync(teacher);
-            await _teacherWrite.SaveAsync();
+                await _teacherWrite.AddAsync(teacher);
+                await _teacherWrite.SaveAsync();
+            }
+            catch
+            {
+                await _userManager.DeleteAsync(appUser);
+                return new ErrorResult("Müəllim profili yaradıla bilmədi.");
+            }
 
             return new SuccessResult("Müəllim uğurla qeydiyyata alındı");
         }

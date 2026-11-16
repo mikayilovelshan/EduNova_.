@@ -9,9 +9,9 @@ namespace UniLMS.Application.Interfaces.Services
 {
     public interface IExamResultService
     {
-        Task<IDataResult<List<GetExamResultDTO>>> GetAllAsync();
+        Task<IDataResult<List<GetExamResultDTO>>> GetAllAsync(Guid? studentAppUserId = null, Guid? teacherAppUserId = null);
 
-        Task<IDataResult<GetExamResultDTO>> GetByIdAsync(Guid id);
+        Task<IDataResult<GetExamResultDTO>> GetByIdAsync(Guid id, Guid? studentAppUserId = null, Guid? teacherAppUserId = null);
 
         Task<IDataResult<StudentExamResultSummaryDTO>> GetStudentExamResultSummary(Guid studentId, Guid courseOfferingId);
 

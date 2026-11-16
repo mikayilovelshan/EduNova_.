@@ -68,7 +68,7 @@ namespace UniLMS.Persistence.Repositories
 
         public async Task<bool> HardDeleteAsync(Guid id)
         {
-            var entity = await Table.FirstOrDefaultAsync(x => x.Id == id);
+            var entity = await Table.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == id);
             if (entity == null)
                 return false;
             return HardDelete(entity);

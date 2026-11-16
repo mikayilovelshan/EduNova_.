@@ -18,5 +18,7 @@ namespace UniLMS.Application.DTOs.Teachers
 
         public string CafedraName { get; set; }
 
+        public Guid CafedraId { get; set; }
+
     }
 }

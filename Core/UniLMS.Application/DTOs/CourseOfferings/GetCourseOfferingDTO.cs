@@ -8,6 +8,14 @@ namespace UniLMS.Application.DTOs.CourseOfferings
     {
         public Guid Id { get; set; }
 
+        public Guid SemesterId { get; set; }
+
+        public Guid GroupId { get; set; }
+
+        public Guid CourseId { get; set; }
+
+        public Guid TeacherId { get; set; }
+
         public string SemesterName { get; set; }
 
         public string GroupCode { get; set; }

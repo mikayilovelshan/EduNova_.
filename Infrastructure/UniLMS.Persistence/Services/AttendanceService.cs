@@ -60,10 +60,18 @@ namespace UniLMS.Persistence.Services
             return new SuccessResult("Davamiyyət uğurla qeydə alındı.");
         }
 
-        public async Task<IDataResult<List<GetAttendanceDTO>>> GetAllAsync()
+        public async Task<IDataResult<List<GetAttendanceDTO>>> GetAllAsync(Guid? studentAppUserId = null, Guid? teacherAppUserId = null)
         {
-            var attendances = await _attendanceRead.GetAll(tracking : false)
+            var query = _attendanceRead.GetAll(tracking: false);
+
+            if (studentAppUserId.HasValue)
+                query = query.Where(x => x.Student.AppUserId == studentAppUserId.Value);
+            else if (teacherAppUserId.HasValue)
+                query = query.Where(x => x.CourseSchedule.CourseOffering.Teacher.AppUserId == teacherAppUserId.Value);
+
+            var attendances = await query
                 .Include(x => x.Student)
+                    .ThenInclude(s => s.AppUser)
                 .Include(x => x.CourseSchedule)
                     .ThenInclude(cs => cs.CourseOffering)
                     .ThenInclude(co => co.Group)
@@ -77,10 +85,18 @@ namespace UniLMS.Persistence.Services
             return new SuccessDataResult<List<GetAttendanceDTO>>(dtos);
         }
 
-        public async Task<IDataResult<GetAttendanceDTO>> GetByIdAsync(Guid id)
+        public async Task<IDataResult<GetAttendanceDTO>> GetByIdAsync(Guid id, Guid? studentAppUserId = null, Guid? teacherAppUserId = null)
         {
-            var attendance = await _attendanceRead.GetWhere(x => x.Id == id,tracking: false)
+            var query = _attendanceRead.GetWhere(x => x.Id == id, tracking: false);
+
+            if (studentAppUserId.HasValue)
+                query = query.Where(x => x.Student.AppUserId == studentAppUserId.Value);
+            else if (teacherAppUserId.HasValue)
+                query = query.Where(x => x.CourseSchedule.CourseOffering.Teacher.AppUserId == teacherAppUserId.Value);
+
+            var attendance = await query
                 .Include(x => x.Student)
+                    .ThenInclude(s => s.AppUser)
                 .Include(x => x.CourseSchedule)
                     .ThenInclude(cs => cs.CourseOffering)
                     .ThenInclude(co => co.Group)
@@ -170,7 +186,7 @@ namespace UniLMS.Persistence.Services
 
             var existingAttendances = await _attendanceRead.GetWhere(x => attendanceIds.Contains(x.Id), tracking: true).ToListAsync();
 
-            if (existingAttendances.Any())
+            if (!existingAttendances.Any())
                 return new ErrorResult("Yenilənəcək davamiyyət qeydi tapılmadı.");
 
             if (existingAttendances.Count != attendanceIds.Count)

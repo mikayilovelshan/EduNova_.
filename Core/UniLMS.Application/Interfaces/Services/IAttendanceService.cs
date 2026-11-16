@@ -9,9 +9,9 @@ namespace UniLMS.Application.Interfaces.Services
 {
     public interface IAttendanceService
     {
-        Task<IDataResult<List<GetAttendanceDTO>>> GetAllAsync();
+        Task<IDataResult<List<GetAttendanceDTO>>> GetAllAsync(Guid? studentAppUserId = null, Guid? teacherAppUserId = null);
 
-        Task<IDataResult<GetAttendanceDTO>> GetByIdAsync(Guid id);
+        Task<IDataResult<GetAttendanceDTO>> GetByIdAsync(Guid id, Guid? studentAppUserId = null, Guid? teacherAppUserId = null);
 
         Task<IResult> CreateRangeAsync(CreateAttendanceRangeDTO model);
 

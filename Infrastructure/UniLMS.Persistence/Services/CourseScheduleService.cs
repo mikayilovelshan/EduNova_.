@@ -72,6 +72,7 @@ namespace UniLMS.Persistence.Services
                     .ThenInclude(x => x.Course)
                 .Include(x => x.CourseOffering)
                     .ThenInclude(x => x.Teacher)
+                        .ThenInclude(x => x.AppUser)
                 .ToListAsync();
 
             var dtos = _mapper.Map<List<GetCourseScheduleDTO>>(courseSchedule);
@@ -88,6 +89,7 @@ namespace UniLMS.Persistence.Services
                     .ThenInclude(x => x.Course)
                 .Include(x => x.CourseOffering)
                     .ThenInclude(x => x.Teacher)
+                        .ThenInclude(x => x.AppUser)
                 .FirstOrDefaultAsync();
 
             if (courseSchedule == null)

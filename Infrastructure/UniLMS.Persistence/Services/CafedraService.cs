@@ -64,7 +64,7 @@ namespace UniLMS.Persistence.Services
         public async Task<IResult> HardDeleteRangeAsync(List<Guid> ids)
         {
             var cafedras = await _cafedraRead.GetWhere(d => ids.Contains(d.Id), tracking: true).ToListAsync();
-            if (cafedras == null)
+            if (!cafedras.Any())
                 return new ErrorResult("Silmək üçün heç bir kafedra tapılmadı");
             _cafedraWrite.HardDeleteRange(cafedras);
             await _cafedraWrite.SaveAsync();
@@ -86,7 +86,7 @@ namespace UniLMS.Persistence.Services
         public async Task<IResult> SoftDeleteRangeAsync(List<Guid> ids)
         {
             var cafedras = await _cafedraRead.GetWhere(d => ids.Contains(d.Id), tracking: true).ToListAsync();
-            if (cafedras == null)
+            if (!cafedras.Any())
                 return new ErrorResult("Silmək üçün heç bir kafedra tapılmadı");
             _cafedraWrite.SoftDeleteRange(cafedras);
             await _cafedraWrite.SaveAsync();
@@ -100,7 +100,7 @@ namespace UniLMS.Persistence.Services
                 return new ErrorResult("Uyğun kafedra mövcud deyil");
 
             bool codeExist = await _cafedraRead
-                .GetWhere(d => d.Code == model.Code, tracking: false)
+                .GetWhere(d => d.Code == model.Code && d.Id != model.Id, tracking: false)
                 .AnyAsync();
             if (codeExist)
                 return new ErrorResult($"{model.Code} kodlu kafedra artıq mövcuddur");

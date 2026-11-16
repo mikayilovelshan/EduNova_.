@@ -94,7 +94,7 @@ namespace UniLMS.Persistence.Services
                 .GetWhere(s => ids.Contains(s.Id),tracking: true)
                 .ToListAsync();
 
-            if(specialities == null)
+            if(!specialities.Any())
                 return new ErrorResult("Silmək üçün heç bir ixtisas tapılmadı");
 
             _specialityWrite.HardDeleteRange(specialities);
@@ -119,7 +119,7 @@ namespace UniLMS.Persistence.Services
         public async Task<IResult> SoftDeleteRangeAsync(List<Guid> ids)
         {
             var cafedras = await _specialityRead.GetWhere(d => ids.Contains(d.Id), tracking: true).ToListAsync();
-            if (cafedras == null)
+            if (!cafedras.Any())
                 return new ErrorResult("Silmək üçün heç bir ixtisas tapılmadı");
             _specialityWrite.SoftDeleteRange(cafedras);
             await _specialityWrite.SaveAsync();

@@ -11,7 +11,7 @@ namespace UniLMS.Application.DTOs.Specialities
 
         public string Code  { get; set; }
 
-        public string? Describtion { get; set; }
+        public string? Description { get; set; }
 
         public SpecialityDegree Degree { get; set; }
 

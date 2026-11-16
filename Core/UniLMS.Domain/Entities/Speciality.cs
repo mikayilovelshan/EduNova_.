@@ -12,6 +12,8 @@ namespace UniLMS.Domain.Entities
 
         public string Code { get; set; }
 
+        public string? Description { get; set; }
+
         public SpecialityDegree Degree { get; set; }
 
         public Guid? FacultyId { get; set; }

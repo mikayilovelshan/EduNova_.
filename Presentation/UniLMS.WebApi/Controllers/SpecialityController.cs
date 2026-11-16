@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UniLMS.Application.DTOs.Specialities;
 using UniLMS.Application.Interfaces.Services;
@@ -7,6 +8,7 @@ namespace UniLMS.WebApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class SpecialityController(ISpecialityService _specialityService) : ControllerBase
     {
         [HttpPost("create")]
@@ -24,6 +26,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpDelete("soft")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> SoftDelete(List<Guid> ids)
         {
             var result = await _specialityService.SoftDeleteRangeAsync(ids);
@@ -31,6 +34,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpDelete("hard")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> HardDelete(List<Guid> ids)
         {
             var result = await _specialityService.HardDeleteRangeAsync(ids);
@@ -52,6 +56,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpPost("restore")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Restore(Guid id)
         {
             var result = await _specialityService.RestoreAsync(id);

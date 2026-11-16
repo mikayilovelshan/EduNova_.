@@ -33,16 +33,29 @@ namespace UniLMS.Persistence.Services
             if (!result.Succeeded)
                 return new ErrorResult("Tələbə yaradıla bilmədi!");
 
-            var student = _mapper.Map<Student>(model);
+            var roleResult = await _userManager.AddToRoleAsync(appUser, "Student");
+            if (!roleResult.Succeeded)
+            {
+                await _userManager.DeleteAsync(appUser);
+                return new ErrorResult("Tələbə rolu təyin edilə bilmədi.");
+            }
 
-            student.AppUserId = appUser.Id;
-            student.StudentNumber = model.StudentNumber;
-            student.GroupId = model.GroupId;
-            student.GPA = 0;
-            
-       
-            await _studentWrite.AddAsync(student);
-            await _studentWrite.SaveAsync();
+            try
+            {
+                var student = _mapper.Map<Student>(model);
+                student.AppUserId = appUser.Id;
+                student.StudentNumber = model.StudentNumber;
+                student.GroupId = model.GroupId;
+                student.GPA = model.GPA;
+
+                await _studentWrite.AddAsync(student);
+                await _studentWrite.SaveAsync();
+            }
+            catch
+            {
+                await _userManager.DeleteAsync(appUser);
+                return new ErrorResult("Tələbə profili yaradıla bilmədi.");
+            }
 
             return new SuccessResult("Tələbə uğurla qeydiyyata alındı");
         }
@@ -77,7 +90,9 @@ namespace UniLMS.Persistence.Services
 
         public async Task<IResult> HardDeleteAsync(Guid id)
         {
-            var student = await _studentRead.GetByIdAsync(id, tracking: false);
+            var student = await _studentRead.GetWhere(s => s.Id == id, tracking: true)
+                .Include(s => s.AppUser)
+                .FirstOrDefaultAsync();
 
             if (student == null)
                 return new ErrorResult("Tələbə tapılmadı.");
@@ -102,6 +117,7 @@ namespace UniLMS.Persistence.Services
         {
             var students = await _studentRead
                 .GetWhere(s => ids.Contains(s.Id), tracking: true)
+                .Include(s => s.AppUser)
                 .ToListAsync();
 
             if(!students.Any())

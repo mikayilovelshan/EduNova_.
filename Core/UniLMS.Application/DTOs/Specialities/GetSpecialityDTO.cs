@@ -22,6 +22,10 @@ namespace UniLMS.Application.DTOs.Specialities
 
         public string? CafedraName { get; set; }
 
+        public Guid? FacultyId { get; set; }
+
+        public Guid? CafedraId { get; set; }
+
         public List<GetCourseDTO> Courses { get; set; }
     }
 }

@@ -9,6 +9,8 @@ namespace UniLMS.Application.Interfaces.Services
     {
         string CreateAccessToken(AppUser user);
 
+        DateTime GetAccessTokenExpiration();
+
         string CreateRefreshToken();
     }
 }

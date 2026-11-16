@@ -15,6 +15,7 @@ namespace UniLMS.Application.Mappings
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.AppUser.FirstName))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.AppUser.LastName))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.AppUser.Email))
+                .ForMember(dest => dest.CafedraId, opt => opt.MapFrom(src => src.CafedraId))
                 .ForMember(dest => dest.CafedraName, opt => opt.MapFrom(src => src.Cafedra.Name));
 
             CreateMap<CreateTeacherDTO, Teacher>();

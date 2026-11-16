@@ -2,9 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using UniLMS.Application.Utilities.Results;
 
 namespace UniLMS.Infrastructure
 {
@@ -12,10 +9,7 @@ namespace UniLMS.Infrastructure
     {
         public void DeleteFile(string filePath)
         {
-            if (string.IsNullOrEmpty(filePath))
-                throw new ArgumentException("Fayl seçilməyib və ya boşdur.");
-
-            var fullPath = Path.Combine(_env.WebRootPath, filePath);
+            var fullPath = GetSafePath(filePath);
 
             if(File.Exists(fullPath))
             {
@@ -25,10 +19,7 @@ namespace UniLMS.Infrastructure
 
         public async Task<(Stream FileStream, string ContentType, string FileName)?> DownLoadFileAsync(string filePath)
         {
-            if(string.IsNullOrEmpty(filePath))
-                throw new ArgumentException("Fayl seçilməyib və ya boşdur.");
-
-            var fullpath = Path.Combine(_env.WebRootPath, filePath);
+            var fullpath = GetSafePath(filePath);
 
             if (!File.Exists(fullpath))
                 return null;
@@ -54,7 +45,7 @@ namespace UniLMS.Infrastructure
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Fayl seçilməyib və ya boşdur.");
 
-            var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "materials");
+            var uploadsFolder = Path.Combine(GetWebRootPath(), "uploads", "materials");
 
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
@@ -69,6 +60,32 @@ namespace UniLMS.Infrastructure
             }
 
             return Path.Combine("uploads", "materials", uniqueFileName).Replace("\\", "/");
+        }
+
+        private string GetSafePath(string relativePath)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath))
+                throw new ArgumentException("Fayl seçilməyib və ya boşdur.");
+
+            var root = Path.GetFullPath(GetWebRootPath())
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                + Path.DirectorySeparatorChar;
+            var fullPath = Path.GetFullPath(Path.Combine(root, relativePath.Replace('/', Path.DirectorySeparatorChar)));
+
+            if (!fullPath.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+                throw new ArgumentException("Fayl yolu icazəli qovluqdan kənardadır.");
+
+            return fullPath;
+        }
+
+        private string GetWebRootPath()
+        {
+            var webRootPath = _env.WebRootPath;
+            if (string.IsNullOrWhiteSpace(webRootPath))
+                webRootPath = Path.Combine(_env.ContentRootPath, "wwwroot");
+
+            Directory.CreateDirectory(webRootPath);
+            return webRootPath;
         }
     }
 }

@@ -14,6 +14,7 @@ namespace UniLMS.Application.Mappings
             CreateMap<CreateCourseDTO, Course>();
             CreateMap<UpdateCourseDTO, Course>();
             CreateMap<Course, GetCourseDTO>()
+                .ForMember(dest => dest.CafedraId, opt => opt.MapFrom(src => src.CafedraId))
                 .ForMember(dest => dest.CafedraName, opt => opt.MapFrom(src => src.Cafedra.Name));
                 
         }

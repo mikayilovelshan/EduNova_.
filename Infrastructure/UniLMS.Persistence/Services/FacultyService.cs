@@ -69,7 +69,7 @@ namespace UniLMS.Persistence.Services
         {
             var faculties = await _facultyRead.GetWhere(f => ids.Contains(f.Id), tracking: true).ToListAsync();
 
-            if (faculties == null)
+            if (!faculties.Any())
                 return new ErrorResult("Silinmək üçün heç bir fakültə tapılmadı.");
 
             _facultyWrite.HardDeleteRange(faculties);
@@ -94,7 +94,7 @@ namespace UniLMS.Persistence.Services
         public async Task<IResult> SoftDeleteRangeAsync(List<Guid> ids)
         {
             var faculties = await _facultyRead.GetWhere(f => ids.Contains(f.Id), tracking: true).ToListAsync();
-            if (faculties == null)
+            if (!faculties.Any())
                 return new ErrorResult("Silinmək üçün heç bir fakültə tapılmadı.");
 
             _facultyWrite.SoftDeleteRange(faculties);
@@ -112,7 +112,7 @@ namespace UniLMS.Persistence.Services
                 return new ErrorResult("Uyğun fakültə mövcud deyil");
 
             bool codeExists = await _facultyRead
-                .GetWhere(f => f.Code == model.Code, tracking: false)
+                .GetWhere(f => f.Code == model.Code && f.Id != model.Id, tracking: false)
                 .AnyAsync();
 
             if (codeExists)

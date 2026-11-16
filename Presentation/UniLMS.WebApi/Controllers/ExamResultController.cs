@@ -1,21 +1,29 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Security.Claims;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniLMS.Application.DTOs.ExamResults;
 using UniLMS.Application.Interfaces.Services;
+using UniLMS.Persistence.Contexts;
 
 namespace UniLMS.WebApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class ExamResultController(IExamResultService _examResultService) : ControllerBase
+    [Authorize]
+    public class ExamResultController(IExamResultService _examResultService, IAcademicOwnershipService _ownershipService) : ControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _examResultService.GetAllAsync();
+            var result = await _examResultService.GetAllAsync(
+                studentAppUserId: GetAppUserIdForRole("Student"),
+                teacherAppUserId: GetAppUserIdForRole("Teacher"));
             if (result.Success)
                 return Ok(result);
 
@@ -25,7 +33,21 @@ namespace UniLMS.WebApi.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var result = await _examResultService.GetByIdAsync(id);
+            if (!User.IsInRole("Admin"))
+            {
+                if (!TryGetAuthenticatedUserId(out var appUserId))
+                    return Forbid();
+
+                if (!await _ownershipService.ExamResultExistsAsync(id))
+                    return NotFound();
+
+                if (!await _ownershipService.CanAccessExamResultAsync(id, appUserId))
+                    return Forbid();
+            }
+
+            var result = await _examResultService.GetByIdAsync(id,
+                studentAppUserId: GetAppUserIdForRole("Student"),
+                teacherAppUserId: GetAppUserIdForRole("Teacher"));
             if (result.Success)
                 return Ok(result);
 
@@ -35,6 +57,14 @@ namespace UniLMS.WebApi.Controllers
         [HttpGet("student-summary")]
         public async Task<IActionResult> GetStudentExamResultSummary([FromQuery] Guid studentId, [FromQuery] Guid courseOfferingId)
         {
+            if (!await _ownershipService.StudentExistsAsync(studentId) ||
+                !await _ownershipService.CourseOfferingExistsAsync(courseOfferingId))
+                return NotFound();
+
+            if (!User.IsInRole("Admin") && (!TryGetAuthenticatedUserId(out var appUserId) ||
+                !await _ownershipService.CanAccessStudentCourseAsync(studentId, courseOfferingId, appUserId, User.IsInRole("Teacher"))))
+                return Forbid();
+
             var result = await _examResultService.GetStudentExamResultSummary(studentId, courseOfferingId);
             if (result.Success)
                 return Ok(result);
@@ -45,6 +75,14 @@ namespace UniLMS.WebApi.Controllers
         [HttpGet("course-detailed-report")]
         public async Task<IActionResult> GetStudentCourseDetailedReport([FromQuery] Guid studentId, [FromQuery] Guid courseOfferingId)
         {
+            if (!await _ownershipService.StudentExistsAsync(studentId) ||
+                !await _ownershipService.CourseOfferingExistsAsync(courseOfferingId))
+                return NotFound();
+
+            if (!User.IsInRole("Admin") && (!TryGetAuthenticatedUserId(out var appUserId) ||
+                !await _ownershipService.CanAccessStudentCourseAsync(studentId, courseOfferingId, appUserId, User.IsInRole("Teacher"))))
+                return Forbid();
+
             var result = await _examResultService.GetStudentCourseDetailedReport(studentId, courseOfferingId);
             if (result.Success)
                 return Ok(result);
@@ -53,8 +91,19 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpPost("create-range")]
+        [Authorize(Roles = "Admin,Teacher")]
         public async Task<IActionResult> CreateRange([FromBody] CreateExamResultRangeDTO model)
         {
+            if (!await _ownershipService.CourseOfferingExistsAsync(model.CourseOfferingId))
+                return NotFound();
+
+            if (!User.IsInRole("Admin"))
+            {
+                if (!TryGetAuthenticatedUserId(out var appUserId) ||
+                    !await _ownershipService.CanManageCourseOfferingAsync(model.CourseOfferingId, appUserId))
+                    return Forbid();
+            }
+
             var result = await _examResultService.CreateRangeAsync(model);
             if (result.Success)
                 return Ok(result);
@@ -63,8 +112,21 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin,Teacher")]
         public async Task<IActionResult> Update([FromBody] UpdateExamResultDTO model)
         {
+            if (!User.IsInRole("Admin"))
+            {
+                if (!TryGetAuthenticatedUserId(out var appUserId))
+                    return Forbid();
+
+                if (!await _ownershipService.ExamResultExistsAsync(model.Id))
+                    return NotFound();
+
+                if (!await _ownershipService.CanManageExamResultAsync(model.Id, appUserId))
+                    return Forbid();
+            }
+
             var result = await _examResultService.UpdateAsync(model);
             if (result.Success)
                 return Ok(result);
@@ -72,7 +134,23 @@ namespace UniLMS.WebApi.Controllers
             return BadRequest(result);
         }
 
+        private bool TryGetAuthenticatedUserId(out Guid appUserId)
+        {
+            return Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out appUserId);
+        }
+
+        private Guid? GetAppUserIdForRole(string role)
+        {
+            if (!User.IsInRole(role))
+                return null;
+
+            return Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var appUserId)
+                ? appUserId
+                : Guid.Empty;
+        }
+
         [HttpDelete("soft/{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> SoftDelete(Guid id)
         {
             var result = await _examResultService.SoftDeleteAsync(id);
@@ -83,6 +161,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpPost("soft-range")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> SoftDeleteRange([FromBody] List<Guid> ids)
         {
             var result = await _examResultService.SoftDeleteRangeAsync(ids);
@@ -93,6 +172,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpDelete("hard/{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> HardDelete(Guid id)
         {
             var result = await _examResultService.HardDeleteAsync(id);
@@ -103,6 +183,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpPost("hard-range")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> HardDeleteRange([FromBody] List<Guid> ids)
         {
             var result = await _examResultService.HardDeleteRangeAsync(ids);
@@ -113,6 +194,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpPost("restore/{id:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Restore(Guid id)
         {
             var result = await _examResultService.RestoreAsync(id);

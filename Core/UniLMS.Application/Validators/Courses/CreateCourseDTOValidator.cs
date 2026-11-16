@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using UniLMS.Application.DTOs.Cafedras;
+using UniLMS.Application.DTOs.Courses;
 
 namespace UniLMS.Application.Validators.Courses
 {
-    public class CreateCourseDTOValidator : AbstractValidator<CreateCafedraDTO>
+    public class CreateCourseDTOValidator : AbstractValidator<CreateCourseDTO>
     {
         public CreateCourseDTOValidator() 
         {

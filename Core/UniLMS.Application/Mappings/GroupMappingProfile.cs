@@ -19,6 +19,7 @@ namespace UniLMS.Application.Mappings
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.AppUser.FirstName} {src.AppUser.LastName}"));
 
             CreateMap<Group, GetGroupDTO>()
+                .ForMember(dest => dest.SpecialityId, opt => opt.MapFrom(src => src.SpecialityId))
                 .ForMember(dest => dest.SpecialityName, opt => opt.MapFrom(src => src.Speciality.Name));
                 
         }

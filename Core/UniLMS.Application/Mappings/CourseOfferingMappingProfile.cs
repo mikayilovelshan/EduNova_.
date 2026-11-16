@@ -16,6 +16,10 @@ namespace UniLMS.Application.Mappings
             CreateMap<UpdateCourseOfferingDTO, CourseOffering>();
 
             CreateMap<CourseOffering, GetCourseOfferingDTO>()
+                .ForMember(dest => dest.SemesterId, opt => opt.MapFrom(src => src.SemesterId))
+                .ForMember(dest => dest.GroupId, opt => opt.MapFrom(src => src.GroupId))
+                .ForMember(dest => dest.CourseId, opt => opt.MapFrom(src => src.CourseId))
+                .ForMember(dest => dest.TeacherId, opt => opt.MapFrom(src => src.TeacherId))
                 .ForMember(dest => dest.SemesterName, opt => opt.MapFrom(src => src.Semester.Name))
                 .ForMember(dest => dest.GroupCode, opt => opt.MapFrom(src => src.Group.Code))
                 .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.AppUser.FirstName} {src.Teacher.AppUser.LastName}"))

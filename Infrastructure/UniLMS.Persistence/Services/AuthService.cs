@@ -39,6 +39,7 @@ namespace UniLMS.Persistence.Services
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
+                AccessTokenExpiration = _tokenService.GetAccessTokenExpiration(),
             };
 
             return new SuccessDataResult<TokenResponseDTO>(dto);
@@ -47,25 +48,23 @@ namespace UniLMS.Persistence.Services
 
         public async Task<IDataResult<TokenResponseDTO>> RefreshToken(string refreshToken)
         {
+            if (string.IsNullOrWhiteSpace(refreshToken))
+                return new ErrorDataResult<TokenResponseDTO>("Refresh token tələb olunur.");
+
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.RefreshToken == refreshToken);
 
             if (user == null)
                 return new ErrorDataResult<TokenResponseDTO>("İstifadəçi tapılmadı");
 
-            if (user.RefreshTokenEndDate <= DateTime.UtcNow)
+            if (!user.RefreshTokenEndDate.HasValue || user.RefreshTokenEndDate.Value <= DateTime.UtcNow)
                 return new ErrorDataResult<TokenResponseDTO>("Yenidən login olmalısız");
 
             var accessToken = _tokenService.CreateAccessToken(user);
-            var newRefreshToken = _tokenService.CreateRefreshToken();
-
-            user.RefreshToken = newRefreshToken;
-
-            await _userManager.UpdateAsync(user);
-
             var dto = new TokenResponseDTO
             {
                 AccessToken = accessToken,
-                RefreshToken = newRefreshToken,
+                RefreshToken = refreshToken,
+                AccessTokenExpiration = _tokenService.GetAccessTokenExpiration(),
             };
 
             return new SuccessDataResult<TokenResponseDTO>(dto);
@@ -91,7 +90,12 @@ namespace UniLMS.Persistence.Services
             if (!result.Succeeded)
                 return new ErrorResult("Hesab yaradıla bilmədi");
 
-            await _userManager.AddToRoleAsync(user, "Student");
+            var roleResult = await _userManager.AddToRoleAsync(user, "Student");
+            if (!roleResult.Succeeded)
+            {
+                await _userManager.DeleteAsync(user);
+                return new ErrorResult("Student rolu təyin edilə bilmədi.");
+            }
 
             return new SuccessResult("Hesab uğurla yaradıldı");
         }
