@@ -13,6 +13,7 @@ namespace UniLMS.WebApi.Controllers
     public class SemesterController(ISemesterService _semesterService) : ControllerBase
     {
         [HttpPost("create")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateSemesterDTO model)
         {
             var result = await _semesterService.CreateAsync(model);
@@ -20,6 +21,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpPut("update")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update([FromBody] UpdateSemesterDTO model)
         {
             var result = await _semesterService.UpdateAsync(model);

@@ -33,7 +33,8 @@ namespace UniLMS.Infrastructure
             memoryStream.Position = 0;
 
             var fileName = Path.GetFileName(fullpath);
-            var contentType = "application/octet-stream";
+            if (!new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider().TryGetContentType(fullpath, out var contentType))
+                contentType = "application/octet-stream";
 
             return (memoryStream, contentType, fileName);
             
@@ -60,6 +61,19 @@ namespace UniLMS.Infrastructure
             }
 
             return Path.Combine("uploads", "materials", uniqueFileName).Replace("\\", "/");
+        }
+
+        public string? GetPhysicalPath(string filePath)
+        {
+            try
+            {
+                var fullPath = GetSafePath(filePath);
+                return File.Exists(fullPath) ? fullPath : null;
+            }
+            catch (ArgumentException)
+            {
+                return null;
+            }
         }
 
         private string GetSafePath(string relativePath)

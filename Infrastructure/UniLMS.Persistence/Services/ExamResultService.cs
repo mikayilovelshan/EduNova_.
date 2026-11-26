@@ -6,6 +6,7 @@ using UniLMS.Application.Repositories.AttendanceRepository;
 using UniLMS.Application.Repositories.CourseOfferingRepository;
 using UniLMS.Application.Repositories.ExamResultRepository;
 using UniLMS.Application.Repositories.StudentRepository;
+using UniLMS.Application.Utilities.Grading;
 using UniLMS.Application.Utilities.Results;
 using UniLMS.Domain.Entities;
 using UniLMS.Domain.Enums;
@@ -26,14 +27,23 @@ namespace UniLMS.Persistence.Services
             if (courseOffering == null)
                 return new ErrorResult("Uyğun dərs qeydi tapılmadı");
 
-            var examResult = await _readExamResult.GetWhere(x => x.CourseOfferingId == model.CourseOfferingId && 
-                                                        x.ExamType == model.ExamType && 
-                                                        x.EvaluationDate.Date == model.EvaluationDate.Date, tracking: false).AnyAsync();
-
-            if (examResult)
-                return new ErrorResult("Bu tarixdə artıq imtahan keçirilib və qiymətlər daxil edilib");
+            var maxScore = GradingPolicy.MaxScoreFor(model.ExamType);
+            if (model.StudentScores.Any(x => x.Score < 0 || x.Score > maxScore))
+                return new ErrorResult($"{model.ExamType} üçün bal 0 ilə {maxScore} arasında olmalıdır.");
 
             var studentsId = model.StudentScores.Select(x => x.StudentId).ToList();
+
+            if (studentsId.Count != studentsId.Distinct().Count())
+                return new ErrorResult("Eyni tələbə üçün birdən çox bal göndərilib.");
+
+            // A student can only have one result per exam type in a course offering (enforced by a unique index),
+            // so check against that rule instead of the evaluation date to avoid a database exception.
+            var alreadyGraded = await _readExamResult.GetWhere(x => x.CourseOfferingId == model.CourseOfferingId &&
+                                                        x.ExamType == model.ExamType &&
+                                                        studentsId.Contains(x.StudentId), tracking: false).AnyAsync();
+
+            if (alreadyGraded)
+                return new ErrorResult("Bu imtahan növü üzrə tələbələrdən bəzilərinin qiyməti artıq daxil edilib. Mövcud qiyməti yeniləyin.");
 
             var validStudents = await _courseOfferingRead.GetWhere(x => x.Id == model.CourseOfferingId, tracking : false)
                 .SelectMany(x => x.Group.Students)
@@ -59,9 +69,9 @@ namespace UniLMS.Persistence.Services
             await _writeExamResult.AddRangeAsync(examResults);
             await _writeExamResult.SaveAsync();
 
-            return new SuccessResult("İmtahan qiymətləri uğurla əalvə edildi");
+            return new SuccessResult("İmtahan qiymətləri uğurla əlavə edildi");
         }
-        
+
         public async Task<IDataResult<List<GetExamResultDTO>>> GetAllAsync(Guid? studentAppUserId = null, Guid? teacherAppUserId = null)
         {
             var query = _readExamResult.GetAll(tracking: false);
@@ -76,10 +86,8 @@ namespace UniLMS.Persistence.Services
                     .ThenInclude(s => s.AppUser)
                 .Include(x => x.CourseOffering)
                     .ThenInclude(x => x.Course)
+                .OrderByDescending(x => x.EvaluationDate)
                 .ToListAsync();
-
-            if (examResults == null)
-                return new ErrorDataResult<List<GetExamResultDTO>>("Məlumat tapıla bilmədi");
 
             var dtos = _mapper.Map<List<GetExamResultDTO>>(examResults);
 
@@ -129,16 +137,14 @@ namespace UniLMS.Persistence.Services
             if (!examResults.Any())
                 return new ErrorResult("Silinəcək məlumat tapılmadı");
 
-            if (examResults.Count != ids.Count)
+            if (examResults.Count != ids.Distinct().Count())
                 return new ErrorResult("Göndərilən məlumatların bir və ya bir neçəsi sistemdə tapılmadı.");
 
             _writeExamResult.HardDeleteRange(examResults);
-
             await _writeExamResult.SaveAsync();
 
             return new SuccessResult("Məlumatlar bazadan birdəfəlik silindi.");
         }
-
 
         public async Task<IResult> SoftDeleteAsync(Guid id)
         {
@@ -159,11 +165,10 @@ namespace UniLMS.Persistence.Services
             if (!examResults.Any())
                 return new ErrorResult("Silinəcək məlumat tapılmadı");
 
-            if (examResults.Count != ids.Count)
+            if (examResults.Count != ids.Distinct().Count())
                 return new ErrorResult("Göndərilən məlumatların bir və ya bir neçəsi sistemdə tapılmadı.");
 
             _writeExamResult.SoftDeleteRange(examResults);
-
             await _writeExamResult.SaveAsync();
 
             return new SuccessResult("Məlumatlar bazadan müvəqqəti silindi.");
@@ -172,9 +177,12 @@ namespace UniLMS.Persistence.Services
         public async Task<IResult> RestoreAsync(Guid id)
         {
             bool isRestored = await _writeExamResult.RestoreAsync(id);
+
             if (isRestored == false)
                 return new ErrorResult("Silinmiş məlumat tapılmadı və ya aktivdir");
+
             await _writeExamResult.SaveAsync();
+
             return new SuccessResult("Məlumat bərpa edildi");
         }
 
@@ -185,151 +193,167 @@ namespace UniLMS.Persistence.Services
             if (examResult == null)
                 return new ErrorResult("Uyğun məlumat mövcud deyil");
 
+            var maxScore = GradingPolicy.MaxScoreFor(examResult.ExamType);
+            if (model.Score < 0 || model.Score > maxScore)
+                return new ErrorResult($"{examResult.ExamType} üçün bal 0 ilə {maxScore} arasında olmalıdır.");
+
             _mapper.Map(model, examResult);
             await _writeExamResult.SaveAsync();
 
             return new SuccessResult("Dəyişiklik tətbiq edildi");
-
         }
 
         public async Task<IDataResult<StudentExamResultSummaryDTO>> GetStudentExamResultSummary(Guid studentId, Guid courseOfferingId)
         {
-            var student = await _studentRead.GetByIdAsync(studentId, tracking: false);
+            var report = await GetStudentCourseDetailedReport(studentId, courseOfferingId);
+            if (!report.Success || report.Data == null)
+                return new ErrorDataResult<StudentExamResultSummaryDTO>(report.Message);
 
-            if (student == null)
-                return new ErrorDataResult<StudentExamResultSummaryDTO>("Tələbə tapılmadı.");
-
-            var courseOffering = await _courseOfferingRead.GetByIdAsync(courseOfferingId, tracking: false);
-
-            if (courseOffering == null)
-                return new ErrorDataResult<StudentExamResultSummaryDTO>("Tədris olunan dərs tapılmadı.");
-
-            var examResults = await _readExamResult.GetWhere(x => x.StudentId == studentId && x.CourseOfferingId == courseOfferingId, tracking: false ).ToListAsync();
-
-            var attendances = await _attendanceRead.GetWhere(x => x.StudentId == studentId && x.CourseSchedule.CourseOfferingId == courseOfferingId, tracking: false).ToListAsync();
-
-            int totalClasses = attendances.Count();
-            int attendandClass = attendances.Count(x => x.IsPresent);
-
-            decimal attendanceScore = 0;
-
-            if(totalClasses > 0)
-                attendanceScore = ((decimal)attendandClass / totalClasses) * 10;
-
-            decimal quizAndExamScore = examResults.Where(x => x.ExamType != ExamType.FinalExam).Sum(x => x.Score);
-
-            decimal entryScore = quizAndExamScore + attendanceScore;
-
-            decimal finalScore = examResults.Where(x => x.ExamType == ExamType.FinalExam).Select(x => x.Score).FirstOrDefault();
-
-            decimal totalScore = entryScore + finalScore;
-
-            bool isPassed = totalScore >= 51 && finalScore >= 17;
-
-            string letterGrade = (isPassed, totalScore) switch
-            {
-                (false, _) => "F",
-                (_, >= 91) => "A",
-                (_, >= 81) => "B",
-                (_, >= 71) => "C",
-                (_, >= 61) => "D",
-                (_, >= 51) => "E",
-
-                _ => "F"
-            };
-
-
-            var summaryDto = _mapper.Map<StudentExamResultSummaryDTO>(student);
-            _mapper.Map(courseOffering, summaryDto);
-
-            summaryDto.EntryScore = entryScore;
-            summaryDto.FinalScore = finalScore;
-            summaryDto.LetterGrade = letterGrade;
-            summaryDto.IsPassed = isPassed;
-
-            return new SuccessDataResult<StudentExamResultSummaryDTO>(summaryDto);
+            return new SuccessDataResult<StudentExamResultSummaryDTO>(ToSummary(report.Data));
         }
 
         public async Task<IDataResult<StudentCourseDetailedReportDTO>> GetStudentCourseDetailedReport(Guid studentId, Guid courseOfferingId)
         {
-            var student = await _studentRead.GetByIdAsync(studentId, tracking: false);
+            var student = await _studentRead.GetWhere(x => x.Id == studentId, tracking: false)
+                .Include(x => x.AppUser)
+                .FirstOrDefaultAsync();
+
             if (student == null)
                 return new ErrorDataResult<StudentCourseDetailedReportDTO>("Tələbə tapılmadı.");
 
-            var courseOffering = await _courseOfferingRead.GetByIdAsync(courseOfferingId, tracking: false);
+            var courseOffering = await _courseOfferingRead.GetWhere(x => x.Id == courseOfferingId, tracking: false)
+                .Include(x => x.Course)
+                .FirstOrDefaultAsync();
+
             if (courseOffering == null)
                 return new ErrorDataResult<StudentCourseDetailedReportDTO>("Tədris olunan dərs tapılmadı.");
 
-            
-            var attendances = await _attendanceRead
-                .GetWhere(x => x.StudentId == studentId && x.CourseSchedule.CourseOfferingId == courseOfferingId, tracking: false)
+            var reports = await BuildReportsAsync(new[] { student }, new[] { courseOffering });
+
+            return new SuccessDataResult<StudentCourseDetailedReportDTO>(reports.Single());
+        }
+
+        public async Task<IDataResult<List<StudentExamResultSummaryDTO>>> GetMySummariesAsync(Guid studentAppUserId)
+        {
+            var student = await _studentRead.GetWhere(x => x.AppUserId == studentAppUserId, tracking: false)
+                .Include(x => x.AppUser)
+                .FirstOrDefaultAsync();
+
+            if (student == null)
+                return new ErrorDataResult<List<StudentExamResultSummaryDTO>>("Tələbə profili tapılmadı.");
+
+            if (student.GroupId == null)
+                return new SuccessDataResult<List<StudentExamResultSummaryDTO>>(new List<StudentExamResultSummaryDTO>());
+
+            var offerings = await _courseOfferingRead.GetWhere(x => x.GroupId == student.GroupId, tracking: false)
+                .Include(x => x.Course)
                 .ToListAsync();
 
-            int totalClasses = attendances.Count;
-            int attendandClass = attendances.Count(x => x.IsPresent);
+            var reports = await BuildReportsAsync(new[] { student }, offerings);
 
-            decimal attendanceScore = 0;
-            if (totalClasses > 0)
-                attendanceScore = ((decimal)attendandClass / totalClasses) * 10;
+            return new SuccessDataResult<List<StudentExamResultSummaryDTO>>(reports.Select(ToSummary).ToList());
+        }
 
-            
-            var rawExamResults = await _readExamResult
-                .GetWhere(x => x.StudentId == studentId && x.CourseOfferingId == courseOfferingId, tracking: false)
-                .Include(x => x.Student)
-                    .ThenInclude(s => s.AppUser)
-                .Include(x => x.CourseOffering)
-                    .ThenInclude(co => co.Course)
+        public async Task<IDataResult<List<StudentExamResultSummaryDTO>>> GetCourseOfferingSummariesAsync(Guid courseOfferingId)
+        {
+            var courseOffering = await _courseOfferingRead.GetWhere(x => x.Id == courseOfferingId, tracking: false)
+                .Include(x => x.Course)
+                .FirstOrDefaultAsync();
+
+            if (courseOffering == null)
+                return new ErrorDataResult<List<StudentExamResultSummaryDTO>>("Tədris olunan dərs tapılmadı.");
+
+            var students = await _studentRead.GetWhere(x => x.GroupId == courseOffering.GroupId, tracking: false)
+                .Include(x => x.AppUser)
+                .OrderBy(x => x.AppUser.LastName).ThenBy(x => x.AppUser.FirstName)
+                .ToListAsync();
+
+            var reports = await BuildReportsAsync(students, new[] { courseOffering });
+
+            return new SuccessDataResult<List<StudentExamResultSummaryDTO>>(reports.Select(ToSummary).ToList());
+        }
+
+        /// <summary>
+        /// Builds one report per (student, offering) pair with 3 queries in total instead of N+1 round-trips.
+        /// </summary>
+        private async Task<List<StudentCourseDetailedReportDTO>> BuildReportsAsync(
+            IReadOnlyCollection<Student> students, IReadOnlyCollection<CourseOffering> offerings)
+        {
+            var studentIds = students.Select(x => x.Id).ToList();
+            var offeringIds = offerings.Select(x => x.Id).ToList();
+
+            var attendances = await _attendanceRead
+                .GetWhere(x => studentIds.Contains(x.StudentId) && offeringIds.Contains(x.CourseSchedule.CourseOfferingId), tracking: false)
+                .Select(x => new { x.StudentId, x.CourseSchedule.CourseOfferingId, x.IsPresent })
+                .ToListAsync();
+
+            var results = await _readExamResult
+                .GetWhere(x => studentIds.Contains(x.StudentId) && offeringIds.Contains(x.CourseOfferingId), tracking: false)
                 .OrderBy(x => x.EvaluationDate)
                 .ToListAsync();
 
-            
-            decimal quizAndExamScore = rawExamResults
-                .Where(x => x.ExamType != ExamType.FinalExam)
-                .Sum(x => x.Score);
+            var reports = new List<StudentCourseDetailedReportDTO>();
 
-            decimal entryScore = quizAndExamScore + attendanceScore;
-
-            decimal finalScore = rawExamResults
-                .Where(x => x.ExamType == ExamType.FinalExam)
-                .Select(x => x.Score)
-                .FirstOrDefault();
-
-            decimal totalScore = entryScore + finalScore;
-
-            bool isPassed = totalScore >= 51 && finalScore >= 17;
-
-            string letterGrade = (isPassed, totalScore) switch
+            foreach (var offering in offerings)
             {
-                (false, _) => "F",
-                (_, >= 91) => "A",
-                (_, >= 81) => "B",
-                (_, >= 71) => "C",
-                (_, >= 61) => "D",
-                (_, >= 51) => "E",
-                _ => "F"
-            };
+                foreach (var student in students)
+                {
+                    var studentAttendances = attendances.Where(x => x.StudentId == student.Id && x.CourseOfferingId == offering.Id).ToList();
+                    var studentResults = results.Where(x => x.StudentId == student.Id && x.CourseOfferingId == offering.Id).ToList();
+                    var scored = studentResults.Select(x => (x.ExamType, x.Score)).ToList();
 
-            
-            var detailedScores = rawExamResults.Select(x => new GetExamResultDTO
-            {
-                Id = x.Id,
-                ExamTypeName = x.ExamType.ToString(),
-                Score = x.Score,
-                EvaluationDate = x.EvaluationDate
-            }).ToList();
+                    var attendanceScore = GradingPolicy.AttendanceScore(studentAttendances.Count, studentAttendances.Count(x => x.IsPresent));
+                    var entryScore = GradingPolicy.EntryScore(attendanceScore, scored);
+                    var finalScore = GradingPolicy.FinalScore(scored);
+                    var fullName = $"{student.AppUser?.FirstName} {student.AppUser?.LastName}".Trim();
 
-            
-            var courseResultReportDto = _mapper.Map<StudentCourseDetailedReportDTO>(student);
-            _mapper.Map(courseOffering, courseResultReportDto);
+                    reports.Add(new StudentCourseDetailedReportDTO
+                    {
+                        StudentId = student.Id,
+                        StudentFullName = fullName,
+                        CourseOfferingId = offering.Id,
+                        CourseName = offering.Course?.Name ?? string.Empty,
+                        AttendanceScore = attendanceScore,
+                        TotalClasses = studentAttendances.Count,
+                        AttendedClasses = studentAttendances.Count(x => x.IsPresent),
+                        EntryScore = entryScore,
+                        FinalScore = finalScore,
+                        HasFinalExam = studentResults.Any(x => x.ExamType == ExamType.FinalExam),
+                        LetterGrade = GradingPolicy.LetterGrade(entryScore, finalScore),
+                        IsPassed = GradingPolicy.IsPassed(entryScore, finalScore),
+                        DetailedScores = studentResults.Select(x => new GetExamResultDTO
+                        {
+                            Id = x.Id,
+                            StudentId = student.Id,
+                            StudentFullName = fullName,
+                            CourseOfferingId = offering.Id,
+                            CourseName = offering.Course?.Name ?? string.Empty,
+                            ExamType = x.ExamType,
+                            ExamTypeName = x.ExamType.ToString(),
+                            Score = x.Score,
+                            EvaluationDate = x.EvaluationDate
+                        }).ToList()
+                    });
+                }
+            }
 
-            courseResultReportDto.EntryScore = entryScore;
-            courseResultReportDto.FinalScore = finalScore;
-            courseResultReportDto.LetterGrade = letterGrade;
-            courseResultReportDto.IsPassed = isPassed;
-            courseResultReportDto.DetailedScores = detailedScores;
-
-            return new SuccessDataResult<StudentCourseDetailedReportDTO>(courseResultReportDto);
+            return reports;
         }
 
+        private static StudentExamResultSummaryDTO ToSummary(StudentCourseDetailedReportDTO report) => new()
+        {
+            StudentId = report.StudentId,
+            StudentFullName = report.StudentFullName,
+            CourseOfferingId = report.CourseOfferingId,
+            CourseName = report.CourseName,
+            AttendanceScore = report.AttendanceScore,
+            TotalClasses = report.TotalClasses,
+            AttendedClasses = report.AttendedClasses,
+            EntryScore = report.EntryScore,
+            FinalScore = report.FinalScore,
+            HasFinalExam = report.HasFinalExam,
+            LetterGrade = report.LetterGrade,
+            IsPassed = report.IsPassed
+        };
     }
 }

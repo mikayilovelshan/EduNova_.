@@ -26,12 +26,20 @@ namespace UniLMS.Persistence.Services
             if (courseSchedule == null)
                 return new ErrorResult("Dərs cədvəli tapılmadı.");
 
-            var attendance = await _attendanceRead.GetWhere(x => x.CourseScheduleId == model.CourseScheduleId && x.Date == model.Date, tracking: false).AnyAsync();
+            var date = model.Date.Date;
+
+            if (date.DayOfWeek != courseSchedule.DayOfWeek)
+                return new ErrorResult("Seçilmiş tarix bu dərsin cədvəldəki gününə uyğun gəlmir.");
+
+            var attendance = await _attendanceRead.GetWhere(x => x.CourseScheduleId == model.CourseScheduleId && x.Date.Date == date, tracking: false).AnyAsync();
 
             if (attendance)
                 return new ErrorResult("Bu dərs və tarix üçün davamiyyət artıq qeydə alınıb.");
 
             var studentsId = model.Students.Select(x => x.StudentId).ToList();
+
+            if (studentsId.Count != studentsId.Distinct().Count())
+                return new ErrorResult("Eyni tələbə siyahıda birdən çox göndərilib.");
 
             var validStudentsId = await _courseScheduleRead.GetWhere(x => x.Id == model.CourseScheduleId, tracking : false)
                 .SelectMany(x => x.CourseOffering.Group.Students)
@@ -48,7 +56,7 @@ namespace UniLMS.Persistence.Services
             {
                 Id = Guid.NewGuid(),
                 CourseScheduleId = model.CourseScheduleId,
-                Date = model.Date,
+                Date = date,
                 StudentId = s.StudentId,
                 IsPresent = s.IsPresent,
                 Note = s.Note
@@ -69,20 +77,9 @@ namespace UniLMS.Persistence.Services
             else if (teacherAppUserId.HasValue)
                 query = query.Where(x => x.CourseSchedule.CourseOffering.Teacher.AppUserId == teacherAppUserId.Value);
 
-            var attendances = await query
-                .Include(x => x.Student)
-                    .ThenInclude(s => s.AppUser)
-                .Include(x => x.CourseSchedule)
-                    .ThenInclude(cs => cs.CourseOffering)
-                    .ThenInclude(co => co.Group)
-                .Include(x => x.CourseSchedule)
-                    .ThenInclude(cs => cs.CourseOffering)
-                    .ThenInclude(co => co.Teacher)
-                .ToListAsync();
+            var attendances = await IncludeDetails(query).ToListAsync();
 
-            var dtos = _mapper.Map<List<GetAttendanceDTO>>(attendances);
-
-            return new SuccessDataResult<List<GetAttendanceDTO>>(dtos);
+            return new SuccessDataResult<List<GetAttendanceDTO>>(GroupIntoSessions(attendances));
         }
 
         public async Task<IDataResult<GetAttendanceDTO>> GetByIdAsync(Guid id, Guid? studentAppUserId = null, Guid? teacherAppUserId = null)
@@ -94,24 +91,50 @@ namespace UniLMS.Persistence.Services
             else if (teacherAppUserId.HasValue)
                 query = query.Where(x => x.CourseSchedule.CourseOffering.Teacher.AppUserId == teacherAppUserId.Value);
 
-            var attendance = await query
-                .Include(x => x.Student)
-                    .ThenInclude(s => s.AppUser)
-                .Include(x => x.CourseSchedule)
-                    .ThenInclude(cs => cs.CourseOffering)
-                    .ThenInclude(co => co.Group)
-                .Include(x => x.CourseSchedule)
-                    .ThenInclude(cs => cs.CourseOffering)
-                    .ThenInclude(co => co.Teacher)
-                .FirstOrDefaultAsync();
+            var attendance = await IncludeDetails(query).FirstOrDefaultAsync();
 
             if (attendance == null)
                 return new ErrorDataResult<GetAttendanceDTO>("Davamiyyət qeydi tapılmadı");
 
-            var dto = _mapper.Map<GetAttendanceDTO>(attendance);
-
-            return new SuccessDataResult<GetAttendanceDTO>(dto);
+            return new SuccessDataResult<GetAttendanceDTO>(GroupIntoSessions(new List<Attendance> { attendance }).Single());
         }
+
+        private static IQueryable<Attendance> IncludeDetails(IQueryable<Attendance> query)
+            => query
+                .Include(x => x.Student!)
+                    .ThenInclude(s => s.AppUser)
+                .Include(x => x.CourseSchedule!)
+                    .ThenInclude(cs => cs.CourseOffering)
+                    .ThenInclude(co => co.Group)
+                .Include(x => x.CourseSchedule!)
+                    .ThenInclude(cs => cs.CourseOffering)
+                    .ThenInclude(co => co.Course);
+
+        /// <summary>
+        /// Attendance rows are stored per student; the API contract returns one entry per lesson session
+        /// (schedule + date) with the students nested inside it.
+        /// </summary>
+        private List<GetAttendanceDTO> GroupIntoSessions(List<Attendance> attendances)
+            => attendances
+                .GroupBy(x => new { x.CourseScheduleId, Date = x.Date.Date })
+                .Select(g =>
+                {
+                    var schedule = g.First().CourseSchedule;
+                    return new GetAttendanceDTO
+                    {
+                        CourseScheduleId = g.Key.CourseScheduleId,
+                        CourseOfferingId = schedule?.CourseOfferingId ?? Guid.Empty,
+                        CourseName = schedule?.CourseOffering?.Course?.Name ?? string.Empty,
+                        GroupName = schedule?.CourseOffering?.Group?.Code ?? string.Empty,
+                        Date = g.Key.Date,
+                        StartTime = schedule?.StartTime ?? TimeSpan.Zero,
+                        EndTime = schedule?.EndTime ?? TimeSpan.Zero,
+                        Students = _mapper.Map<List<GetStudentAttendanceDTO>>(g.OrderBy(x => x.Student?.AppUser?.LastName).ToList())
+                    };
+                })
+                .OrderByDescending(x => x.Date)
+                .ThenBy(x => x.StartTime)
+                .ToList();
 
         public async Task<IResult> HardDeleteAsync(Guid id)
         {

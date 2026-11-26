@@ -1,0 +1,765 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-24T18:39:33.890Z",
+  "title": "Design System: UniLMS",
+  "extensions": {
+    "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Lavender Ground",
+        "canonical": "oklch(0.972 0.006 275)",
+        "tonalRamp": [
+          "oklch(0.2 0.004 275)",
+          "oklch(0.3 0.013 275)",
+          "oklch(0.42 0.024 275)",
+          "oklch(0.54 0.029 275)",
+          "oklch(0.66 0.029 275)",
+          "oklch(0.78 0.024 275)",
+          "oklch(0.88 0.015 275)",
+          "oklch(0.96 0.006 275)"
+        ],
+        "dark": "oklch(0.165 0.01 275)"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Paper White",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": [
+          "oklch(0.2 0.004 0)",
+          "oklch(0.3 0.013 0)",
+          "oklch(0.42 0.024 0)",
+          "oklch(0.54 0.029 0)",
+          "oklch(0.66 0.029 0)",
+          "oklch(0.78 0.024 0)",
+          "oklch(0.88 0.015 0)",
+          "oklch(0.96 0.006 0)"
+        ],
+        "dark": "oklch(0.225 0.013 275)"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Navy Ink",
+        "canonical": "oklch(0.24 0.025 270)",
+        "tonalRamp": [
+          "oklch(0.2 0.004 270)",
+          "oklch(0.3 0.013 270)",
+          "oklch(0.42 0.024 270)",
+          "oklch(0.54 0.029 270)",
+          "oklch(0.66 0.029 270)",
+          "oklch(0.78 0.024 270)",
+          "oklch(0.88 0.015 270)",
+          "oklch(0.96 0.006 270)"
+        ],
+        "dark": "oklch(0.95 0.006 275)"
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Slate Muted",
+        "canonical": "oklch(0.53 0.03 270)",
+        "tonalRamp": [
+          "oklch(0.2 0.004 270)",
+          "oklch(0.3 0.013 270)",
+          "oklch(0.42 0.024 270)",
+          "oklch(0.54 0.029 270)",
+          "oklch(0.66 0.029 270)",
+          "oklch(0.78 0.024 270)",
+          "oklch(0.88 0.015 270)",
+          "oklch(0.96 0.006 270)"
+        ],
+        "dark": "oklch(0.72 0.02 275)"
+      },
+      "sidebar-ink": {
+        "role": "neutral",
+        "displayName": "Sidebar Ink",
+        "canonical": "oklch(0.42 0.025 270)",
+        "tonalRamp": [
+          "oklch(0.2 0.004 270)",
+          "oklch(0.3 0.013 270)",
+          "oklch(0.42 0.024 270)",
+          "oklch(0.54 0.029 270)",
+          "oklch(0.66 0.029 270)",
+          "oklch(0.78 0.024 270)",
+          "oklch(0.88 0.015 270)",
+          "oklch(0.96 0.006 270)"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(0.925 0.008 275)",
+        "tonalRamp": [
+          "oklch(0.2 0.004 275)",
+          "oklch(0.3 0.013 275)",
+          "oklch(0.42 0.024 275)",
+          "oklch(0.54 0.029 275)",
+          "oklch(0.66 0.029 275)",
+          "oklch(0.78 0.024 275)",
+          "oklch(0.88 0.015 275)",
+          "oklch(0.96 0.006 275)"
+        ],
+        "dark": "oklch(1 0 0 / 8%)"
+      },
+      "field-stroke": {
+        "role": "neutral",
+        "displayName": "Field Stroke",
+        "canonical": "oklch(0.9 0.01 275)",
+        "tonalRamp": [
+          "oklch(0.2 0.004 275)",
+          "oklch(0.3 0.013 275)",
+          "oklch(0.42 0.024 275)",
+          "oklch(0.54 0.029 275)",
+          "oklch(0.66 0.029 275)",
+          "oklch(0.78 0.024 275)",
+          "oklch(0.88 0.015 275)",
+          "oklch(0.96 0.006 275)"
+        ],
+        "dark": "oklch(1 0 0 / 13%)"
+      },
+      "muted-wash": {
+        "role": "neutral",
+        "displayName": "Muted Wash",
+        "canonical": "oklch(0.966 0.006 275)",
+        "tonalRamp": [
+          "oklch(0.2 0.004 275)",
+          "oklch(0.3 0.013 275)",
+          "oklch(0.42 0.024 275)",
+          "oklch(0.54 0.029 275)",
+          "oklch(0.66 0.029 275)",
+          "oklch(0.78 0.024 275)",
+          "oklch(0.88 0.015 275)",
+          "oklch(0.96 0.006 275)"
+        ]
+      },
+      "ember-orange": {
+        "role": "primary",
+        "displayName": "Ember Orange",
+        "canonical": "oklch(0.645 0.19 40)",
+        "tonalRamp": [
+          "oklch(0.2 0.023 40)",
+          "oklch(0.3 0.083 40)",
+          "oklch(0.42 0.152 40)",
+          "oklch(0.54 0.186 40)",
+          "oklch(0.66 0.186 40)",
+          "oklch(0.78 0.152 40)",
+          "oklch(0.88 0.097 40)",
+          "oklch(0.96 0.036 40)"
+        ],
+        "dark": "oklch(0.71 0.17 45)"
+      },
+      "ember-ink": {
+        "role": "primary",
+        "displayName": "Ember Ink",
+        "canonical": "oklch(0.55 0.17 40)",
+        "tonalRamp": [
+          "oklch(0.2 0.020 40)",
+          "oklch(0.3 0.074 40)",
+          "oklch(0.42 0.136 40)",
+          "oklch(0.54 0.166 40)",
+          "oklch(0.66 0.166 40)",
+          "oklch(0.78 0.136 40)",
+          "oklch(0.88 0.087 40)",
+          "oklch(0.96 0.032 40)"
+        ],
+        "dark": "oklch(0.78 0.14 50)"
+      },
+      "ember-wash": {
+        "role": "primary",
+        "displayName": "Ember Wash",
+        "canonical": "oklch(0.965 0.03 45)",
+        "tonalRamp": [
+          "oklch(0.2 0.004 45)",
+          "oklch(0.3 0.013 45)",
+          "oklch(0.42 0.024 45)",
+          "oklch(0.54 0.029 45)",
+          "oklch(0.66 0.029 45)",
+          "oklch(0.78 0.024 45)",
+          "oklch(0.88 0.015 45)",
+          "oklch(0.96 0.006 45)"
+        ],
+        "dark": "oklch(0.71 0.17 45 / 14%)"
+      },
+      "destructive": {
+        "role": "status",
+        "displayName": "Destructive Red",
+        "canonical": "oklch(0.58 0.21 22)",
+        "tonalRamp": [
+          "oklch(0.2 0.025 22)",
+          "oklch(0.3 0.092 22)",
+          "oklch(0.42 0.167 22)",
+          "oklch(0.54 0.205 22)",
+          "oklch(0.66 0.205 22)",
+          "oklch(0.78 0.167 22)",
+          "oklch(0.88 0.107 22)",
+          "oklch(0.96 0.040 22)"
+        ]
+      },
+      "success": {
+        "role": "status",
+        "displayName": "Success Green",
+        "canonical": "oklch(0.6 0.13 165)",
+        "tonalRamp": [
+          "oklch(0.2 0.016 165)",
+          "oklch(0.3 0.057 165)",
+          "oklch(0.42 0.104 165)",
+          "oklch(0.54 0.127 165)",
+          "oklch(0.66 0.127 165)",
+          "oklch(0.78 0.104 165)",
+          "oklch(0.88 0.066 165)",
+          "oklch(0.96 0.025 165)"
+        ]
+      },
+      "warning": {
+        "role": "status",
+        "displayName": "Warning Amber",
+        "canonical": "oklch(0.78 0.15 80)",
+        "tonalRamp": [
+          "oklch(0.2 0.018 80)",
+          "oklch(0.3 0.066 80)",
+          "oklch(0.42 0.120 80)",
+          "oklch(0.54 0.147 80)",
+          "oklch(0.66 0.147 80)",
+          "oklch(0.78 0.120 80)",
+          "oklch(0.88 0.076 80)",
+          "oklch(0.96 0.029 80)"
+        ]
+      },
+      "info": {
+        "role": "status",
+        "displayName": "Info Blue",
+        "canonical": "oklch(0.64 0.12 240)",
+        "tonalRamp": [
+          "oklch(0.2 0.014 240)",
+          "oklch(0.3 0.053 240)",
+          "oklch(0.42 0.096 240)",
+          "oklch(0.54 0.117 240)",
+          "oklch(0.66 0.117 240)",
+          "oklch(0.78 0.096 240)",
+          "oklch(0.88 0.061 240)",
+          "oklch(0.96 0.023 240)"
+        ]
+      },
+      "mint": {
+        "role": "tertiary",
+        "displayName": "Mint Field",
+        "canonical": "oklch(0.958 0.038 172)",
+        "tonalRamp": [
+          "oklch(0.2 0.005 172)",
+          "oklch(0.3 0.017 172)",
+          "oklch(0.42 0.030 172)",
+          "oklch(0.54 0.037 172)",
+          "oklch(0.66 0.037 172)",
+          "oklch(0.78 0.030 172)",
+          "oklch(0.88 0.019 172)",
+          "oklch(0.96 0.007 172)"
+        ]
+      },
+      "mint-mark": {
+        "role": "tertiary",
+        "displayName": "Mint Mark",
+        "canonical": "oklch(0.66 0.12 172)",
+        "tonalRamp": [
+          "oklch(0.2 0.014 172)",
+          "oklch(0.3 0.053 172)",
+          "oklch(0.42 0.096 172)",
+          "oklch(0.54 0.117 172)",
+          "oklch(0.66 0.117 172)",
+          "oklch(0.78 0.096 172)",
+          "oklch(0.88 0.061 172)",
+          "oklch(0.96 0.023 172)"
+        ]
+      },
+      "mint-ink": {
+        "role": "tertiary",
+        "displayName": "Mint Ink",
+        "canonical": "oklch(0.4 0.08 172)",
+        "tonalRamp": [
+          "oklch(0.2 0.010 172)",
+          "oklch(0.3 0.035 172)",
+          "oklch(0.42 0.064 172)",
+          "oklch(0.54 0.078 172)",
+          "oklch(0.66 0.078 172)",
+          "oklch(0.78 0.064 172)",
+          "oklch(0.88 0.041 172)",
+          "oklch(0.96 0.015 172)"
+        ]
+      },
+      "butter": {
+        "role": "tertiary",
+        "displayName": "Butter Field",
+        "canonical": "oklch(0.972 0.05 95)",
+        "tonalRamp": [
+          "oklch(0.2 0.006 95)",
+          "oklch(0.3 0.022 95)",
+          "oklch(0.42 0.040 95)",
+          "oklch(0.54 0.049 95)",
+          "oklch(0.66 0.049 95)",
+          "oklch(0.78 0.040 95)",
+          "oklch(0.88 0.025 95)",
+          "oklch(0.96 0.010 95)"
+        ]
+      },
+      "butter-mark": {
+        "role": "tertiary",
+        "displayName": "Butter Mark",
+        "canonical": "oklch(0.8 0.15 82)",
+        "tonalRamp": [
+          "oklch(0.2 0.018 82)",
+          "oklch(0.3 0.066 82)",
+          "oklch(0.42 0.120 82)",
+          "oklch(0.54 0.147 82)",
+          "oklch(0.66 0.147 82)",
+          "oklch(0.78 0.120 82)",
+          "oklch(0.88 0.076 82)",
+          "oklch(0.96 0.029 82)"
+        ]
+      },
+      "butter-ink": {
+        "role": "tertiary",
+        "displayName": "Butter Ink",
+        "canonical": "oklch(0.46 0.09 70)",
+        "tonalRamp": [
+          "oklch(0.2 0.011 70)",
+          "oklch(0.3 0.039 70)",
+          "oklch(0.42 0.072 70)",
+          "oklch(0.54 0.088 70)",
+          "oklch(0.66 0.088 70)",
+          "oklch(0.78 0.072 70)",
+          "oklch(0.88 0.046 70)",
+          "oklch(0.96 0.017 70)"
+        ]
+      },
+      "lavender": {
+        "role": "tertiary",
+        "displayName": "Lavender Field",
+        "canonical": "oklch(0.955 0.03 285)",
+        "tonalRamp": [
+          "oklch(0.2 0.004 285)",
+          "oklch(0.3 0.013 285)",
+          "oklch(0.42 0.024 285)",
+          "oklch(0.54 0.029 285)",
+          "oklch(0.66 0.029 285)",
+          "oklch(0.78 0.024 285)",
+          "oklch(0.88 0.015 285)",
+          "oklch(0.96 0.006 285)"
+        ]
+      },
+      "lavender-mark": {
+        "role": "tertiary",
+        "displayName": "Lavender Mark",
+        "canonical": "oklch(0.6 0.16 285)",
+        "tonalRamp": [
+          "oklch(0.2 0.019 285)",
+          "oklch(0.3 0.070 285)",
+          "oklch(0.42 0.128 285)",
+          "oklch(0.54 0.156 285)",
+          "oklch(0.66 0.156 285)",
+          "oklch(0.78 0.128 285)",
+          "oklch(0.88 0.082 285)",
+          "oklch(0.96 0.030 285)"
+        ]
+      },
+      "lavender-ink": {
+        "role": "tertiary",
+        "displayName": "Lavender Ink",
+        "canonical": "oklch(0.42 0.13 285)",
+        "tonalRamp": [
+          "oklch(0.2 0.016 285)",
+          "oklch(0.3 0.057 285)",
+          "oklch(0.42 0.104 285)",
+          "oklch(0.54 0.127 285)",
+          "oklch(0.66 0.127 285)",
+          "oklch(0.78 0.104 285)",
+          "oklch(0.88 0.066 285)",
+          "oklch(0.96 0.025 285)"
+        ]
+      },
+      "peach": {
+        "role": "tertiary",
+        "displayName": "Peach Field",
+        "canonical": "oklch(0.962 0.03 45)",
+        "tonalRamp": [
+          "oklch(0.2 0.004 45)",
+          "oklch(0.3 0.013 45)",
+          "oklch(0.42 0.024 45)",
+          "oklch(0.54 0.029 45)",
+          "oklch(0.66 0.029 45)",
+          "oklch(0.78 0.024 45)",
+          "oklch(0.88 0.015 45)",
+          "oklch(0.96 0.006 45)"
+        ]
+      },
+      "peach-mark": {
+        "role": "tertiary",
+        "displayName": "Peach Mark",
+        "canonical": "oklch(0.68 0.17 42)",
+        "tonalRamp": [
+          "oklch(0.2 0.020 42)",
+          "oklch(0.3 0.074 42)",
+          "oklch(0.42 0.136 42)",
+          "oklch(0.54 0.166 42)",
+          "oklch(0.66 0.166 42)",
+          "oklch(0.78 0.136 42)",
+          "oklch(0.88 0.087 42)",
+          "oklch(0.96 0.032 42)"
+        ]
+      },
+      "peach-ink": {
+        "role": "tertiary",
+        "displayName": "Peach Ink",
+        "canonical": "oklch(0.48 0.13 40)",
+        "tonalRamp": [
+          "oklch(0.2 0.016 40)",
+          "oklch(0.3 0.057 40)",
+          "oklch(0.42 0.104 40)",
+          "oklch(0.54 0.127 40)",
+          "oklch(0.66 0.127 40)",
+          "oklch(0.78 0.104 40)",
+          "oklch(0.88 0.066 40)",
+          "oklch(0.96 0.025 40)"
+        ]
+      },
+      "sky": {
+        "role": "tertiary",
+        "displayName": "Sky Field",
+        "canonical": "oklch(0.958 0.03 235)",
+        "tonalRamp": [
+          "oklch(0.2 0.004 235)",
+          "oklch(0.3 0.013 235)",
+          "oklch(0.42 0.024 235)",
+          "oklch(0.54 0.029 235)",
+          "oklch(0.66 0.029 235)",
+          "oklch(0.78 0.024 235)",
+          "oklch(0.88 0.015 235)",
+          "oklch(0.96 0.006 235)"
+        ]
+      },
+      "sky-mark": {
+        "role": "tertiary",
+        "displayName": "Sky Mark",
+        "canonical": "oklch(0.64 0.13 238)",
+        "tonalRamp": [
+          "oklch(0.2 0.016 238)",
+          "oklch(0.3 0.057 238)",
+          "oklch(0.42 0.104 238)",
+          "oklch(0.54 0.127 238)",
+          "oklch(0.66 0.127 238)",
+          "oklch(0.78 0.104 238)",
+          "oklch(0.88 0.066 238)",
+          "oklch(0.96 0.025 238)"
+        ]
+      },
+      "sky-ink": {
+        "role": "tertiary",
+        "displayName": "Sky Ink",
+        "canonical": "oklch(0.42 0.1 240)",
+        "tonalRamp": [
+          "oklch(0.2 0.012 240)",
+          "oklch(0.3 0.044 240)",
+          "oklch(0.42 0.080 240)",
+          "oklch(0.54 0.098 240)",
+          "oklch(0.66 0.098 240)",
+          "oklch(0.78 0.080 240)",
+          "oklch(0.88 0.051 240)",
+          "oklch(0.96 0.019 240)"
+        ]
+      },
+      "rose": {
+        "role": "tertiary",
+        "displayName": "Rose Field",
+        "canonical": "oklch(0.962 0.025 5)",
+        "tonalRamp": [
+          "oklch(0.2 0.004 5)",
+          "oklch(0.3 0.013 5)",
+          "oklch(0.42 0.024 5)",
+          "oklch(0.54 0.029 5)",
+          "oklch(0.66 0.029 5)",
+          "oklch(0.78 0.024 5)",
+          "oklch(0.88 0.015 5)",
+          "oklch(0.96 0.006 5)"
+        ]
+      },
+      "rose-mark": {
+        "role": "tertiary",
+        "displayName": "Rose Mark",
+        "canonical": "oklch(0.64 0.17 8)",
+        "tonalRamp": [
+          "oklch(0.2 0.020 8)",
+          "oklch(0.3 0.074 8)",
+          "oklch(0.42 0.136 8)",
+          "oklch(0.54 0.166 8)",
+          "oklch(0.66 0.166 8)",
+          "oklch(0.78 0.136 8)",
+          "oklch(0.88 0.087 8)",
+          "oklch(0.96 0.032 8)"
+        ]
+      },
+      "rose-ink": {
+        "role": "tertiary",
+        "displayName": "Rose Ink",
+        "canonical": "oklch(0.46 0.14 8)",
+        "tonalRamp": [
+          "oklch(0.2 0.017 8)",
+          "oklch(0.3 0.061 8)",
+          "oklch(0.42 0.112 8)",
+          "oklch(0.54 0.137 8)",
+          "oklch(0.66 0.137 8)",
+          "oklch(0.78 0.112 8)",
+          "oklch(0.88 0.071 8)",
+          "oklch(0.96 0.027 8)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The login hero line only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles and the greeting (1.6rem mobile, 1.85rem from sm), always with the orange full stop."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section titles inside a page, with the orange full stop."
+      },
+      "title-sm": {
+        "displayName": "Title small",
+        "purpose": "Course names on tiles and card headers (cards use 1rem)."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default UI text; dense rows run 0.84 to 0.88rem."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Meta lines, chips, status pills (at 600), sidebar group labels."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "JetBrains Mono for course codes, student numbers, file names and score/time cells in dense tables."
+      }
+    },
+    "shadows": [
+      {
+        "name": "soft",
+        "value": "0 1px 2px oklch(0.3 0.03 270 / 4%), 0 8px 24px -12px oklch(0.3 0.03 270 / 12%)",
+        "purpose": "Resting cards, the inset panel, white pills on tinted tiles, the profile chip."
+      },
+      {
+        "name": "lift",
+        "value": "0 2px 4px oklch(0.3 0.03 270 / 5%), 0 18px 40px -18px oklch(0.3 0.03 270 / 22%)",
+        "purpose": "Popovers, the assistant panel and idle bubble, profile chip on hover."
+      },
+      {
+        "name": "ember-glow",
+        "value": "0 6px 16px -8px var(--primary)",
+        "purpose": "Primary buttons only."
+      },
+      {
+        "name": "launcher-glow",
+        "value": "0 10px 24px -8px var(--primary)",
+        "purpose": "The SiriUs blob, over a blurred 30% orange halo."
+      },
+      {
+        "name": "badge-drop",
+        "value": "drop-shadow(0 6px 8px color-mix(in oklch, currentColor 35%, transparent))",
+        "purpose": "Under hexagon badges, in the tint's mark colour."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Bubble entrance and launcher hover scale."
+      },
+      {
+        "name": "bubble-in",
+        "value": "320ms ease-out-expo; from opacity 0, translateY(6px) scale(0.96)",
+        "purpose": "The idle speech bubble's entrance."
+      },
+      {
+        "name": "blob-morph",
+        "value": "9s ease-in-out infinite border-radius morph",
+        "purpose": "SiriUs breathing; removed under reduced motion."
+      },
+      {
+        "name": "blink",
+        "value": "5.5s ease-in-out infinite scaleY(0.12) at 95%",
+        "purpose": "SiriUs eyes; removed under reduced motion."
+      },
+      {
+        "name": "launcher-hover",
+        "value": "300ms scale(1.06), active scale(0.95)",
+        "purpose": "Launcher press feedback."
+      },
+      {
+        "name": "idle-delay",
+        "value": "7000ms",
+        "purpose": "Stillness before the greeting bubble appears."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one main action on a view: ember-orange pill with a soft orange glow.",
+      "html": "<button class=\"ds-btn-primary\">Daxil ol <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px; border: 1px solid transparent; border-radius: 9999px; background: var(--primary, oklch(0.645 0.19 40)); color: var(--primary-foreground, #fff); font-family: Poppins, ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 600; box-shadow: 0 6px 16px -8px var(--primary, oklch(0.645 0.19 40)); cursor: pointer; transition: all 0.15s; } .ds-btn-primary:hover { background: color-mix(in oklch, var(--primary, oklch(0.645 0.19 40)), black 7%); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring, oklch(0.645 0.19 40)) 50%, transparent); } .ds-btn-primary:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Soft Button",
+      "kind": "button",
+      "refersTo": "button-soft",
+      "description": "The quieter companion action: ember-wash pill with ember-ink label.",
+      "html": "<button class=\"ds-btn-soft\">Jurnal</button>",
+      "css": ".ds-btn-soft { display: inline-flex; align-items: center; height: 32px; padding: 0 14px; border: 1px solid transparent; border-radius: 9999px; background: var(--primary-soft, oklch(0.965 0.03 45)); color: var(--primary-ink, oklch(0.55 0.17 40)); font-family: Poppins, ui-sans-serif, system-ui, sans-serif; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.15s; } .ds-btn-soft:hover { background: color-mix(in oklch, var(--primary-soft, oklch(0.965 0.03 45)), var(--primary, oklch(0.645 0.19 40)) 10%); } .ds-btn-soft:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring, oklch(0.645 0.19 40)) 50%, transparent); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Neutral secondary action: white pill with a hairline border.",
+      "html": "<button class=\"ds-btn-outline\">Müəllim</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border: 1px solid var(--border, oklch(0.925 0.008 275)); border-radius: 9999px; background: var(--background, #fff); color: var(--foreground, oklch(0.24 0.025 270)); font-family: Poppins, ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.15s; } .ds-btn-outline:hover { background: var(--muted, oklch(0.966 0.006 275)); } .ds-btn-outline:focus-visible { outline: none; border-color: var(--ring, oklch(0.645 0.19 40)); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring, oklch(0.645 0.19 40)) 50%, transparent); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Rounded field with leading icon; orange border and ring on focus.",
+      "html": "<label class=\"ds-field\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"/><path d=\"m22 7-10 5L2 7\"/></svg><input class=\"ds-input\" placeholder=\"ad.soyad@unilms.az\"></label>",
+      "css": ".ds-field { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid var(--input, oklch(0.9 0.01 275)); border-radius: 1.05rem; color: var(--muted-foreground, oklch(0.53 0.03 270)); background: transparent; transition: border-color 0.15s, box-shadow 0.15s; } .ds-field:focus-within { border-color: var(--ring, oklch(0.645 0.19 40)); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring, oklch(0.645 0.19 40)) 50%, transparent); } .ds-input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: var(--foreground, oklch(0.24 0.025 270)); font-family: Poppins, ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; } .ds-input::placeholder { color: var(--muted-foreground, oklch(0.53 0.03 270)); }"
+    },
+    {
+      "name": "Sidebar Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Group label with the orange full stop; rows with ember-wash active pill.",
+      "html": "<nav class=\"ds-nav\"><p class=\"ds-nav-label\">Əsas</p><a class=\"ds-nav-item ds-active\" href=\"#\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"9\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"5\" rx=\"1\"/><rect x=\"14\" y=\"12\" width=\"7\" height=\"9\" rx=\"1\"/><rect x=\"3\" y=\"16\" width=\"7\" height=\"5\" rx=\"1\"/></svg>İdarə paneli</a><a class=\"ds-nav-item\" href=\"#\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M16 2v4M8 2v4M3 10h18\"/></svg>Dərs cədvəli</a></nav>",
+      "css": ".ds-nav { display: flex; flex-direction: column; gap: 2px; width: 240px; padding: 8px; background: var(--ground, oklch(0.972 0.006 275)); font-family: Poppins, ui-sans-serif, system-ui, sans-serif; } .ds-nav-label { margin: 0 0 4px; padding: 0 8px; font-size: 0.8rem; font-weight: 600; color: var(--foreground, oklch(0.24 0.025 270)); } .ds-nav-label::after { content: '.'; color: var(--primary, oklch(0.645 0.19 40)); margin-left: 0.06em; } .ds-nav-item { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border-radius: 1.05rem; font-size: 0.84rem; font-weight: 500; color: var(--sidebar-foreground, oklch(0.42 0.025 270)); text-decoration: none; transition: background 0.15s, color 0.15s; } .ds-nav-item:hover { background: var(--sidebar-accent, #fff); color: var(--foreground, oklch(0.24 0.025 270)); } .ds-nav-item:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--ring, oklch(0.645 0.19 40)); } .ds-nav-item.ds-active { background: var(--primary-soft, oklch(0.965 0.03 45)); color: var(--primary-ink, oklch(0.55 0.17 40)); font-weight: 600; }"
+    },
+    {
+      "name": "Status Pills",
+      "kind": "chip",
+      "refersTo": "status-pill-live",
+      "description": "Fixed-width lesson state pills: live, upcoming, done.",
+      "html": "<div class=\"ds-pills\"><span class=\"ds-pill ds-live\">İndi gedir</span><span class=\"ds-pill ds-upcoming\">Gözlənilir</span><span class=\"ds-pill ds-done\">Bitib</span></div>",
+      "css": ".ds-pills { display: flex; gap: 8px; } .ds-pill { display: inline-flex; justify-content: center; width: 96px; padding: 4px 10px; border-radius: 9999px; font-family: Poppins, ui-sans-serif, system-ui, sans-serif; font-size: 0.72rem; font-weight: 600; } .ds-live { background: var(--primary, oklch(0.645 0.19 40)); color: var(--primary-foreground, #fff); } .ds-upcoming { background: var(--primary-soft, oklch(0.965 0.03 45)); color: var(--primary-ink, oklch(0.55 0.17 40)); } .ds-done { background: var(--muted, oklch(0.966 0.006 275)); color: var(--muted-foreground, oklch(0.53 0.03 270)); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "White working card: 2xl corners, hairline ring, soft shadow, title with no full stop.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-title\">Son qiymətlər</div><div class=\"ds-card-desc\">Bu semestr üzrə</div><p class=\"ds-card-body\">Verilənlər bazası sistemləri · 41.4 bal</p></div>",
+      "css": ".ds-card { display: flex; flex-direction: column; gap: 4px; width: 300px; padding: 20px; border-radius: 1.35rem; background: var(--card, #fff); color: var(--card-foreground, oklch(0.24 0.025 270)); box-shadow: 0 0 0 1px var(--border, oklch(0.925 0.008 275)), 0 1px 2px oklch(0.3 0.03 270 / 4%), 0 8px 24px -12px oklch(0.3 0.03 270 / 12%); font-family: Poppins, ui-sans-serif, system-ui, sans-serif; } .ds-card-title { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; } .ds-card-desc { font-size: 0.8rem; color: var(--muted-foreground, oklch(0.53 0.03 270)); } .ds-card-body { margin: 12px 0 0; font-size: 0.875rem; }"
+    },
+    {
+      "name": "Course Card",
+      "kind": "custom",
+      "refersTo": "course-card",
+      "description": "Signature pastel course tile: hexagon badge in the mark colour, name, meta in the tint ink, white pill action.",
+      "html": "<div class=\"ds-course\"><span class=\"ds-hex\"><svg viewBox=\"0 0 48 48\" class=\"ds-hex-bg\"><path d=\"M20.02 3.3Q24 1 27.98 3.3L39.93 10.2Q43.92 12.5 43.92 17.1L43.92 30.9Q43.92 35.5 39.93 37.8L27.98 44.7Q24 47 20.02 44.7L8.07 37.8Q4.08 35.5 4.08 30.9L4.08 17.1Q4.08 12.5 8.07 10.2Z\" fill=\"currentColor\"/></svg><svg class=\"ds-hex-icon\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><ellipse cx=\"12\" cy=\"5\" rx=\"9\" ry=\"3\"/><path d=\"M3 5v14a9 3 0 0 0 18 0V5\"/><path d=\"M3 12a9 3 0 0 0 18 0\"/></svg></span><p class=\"ds-course-name\">Verilənlər bazası sistemləri</p><p class=\"ds-course-meta\">16/17 dərs · 41.4 bal</p><button class=\"ds-pill-on-tint\">Qiymətlər</button></div>",
+      "css": ".ds-course { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 220px; padding: 20px 16px 16px; border-radius: 1.35rem; background: var(--mint, oklch(0.958 0.038 172)); color: var(--mint-ink, oklch(0.4 0.08 172)); text-align: center; font-family: Poppins, ui-sans-serif, system-ui, sans-serif; } .ds-hex { position: relative; display: inline-grid; place-items: center; width: 48px; height: 48px; color: var(--mint-mark, oklch(0.66 0.12 172)); } .ds-hex-bg { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 6px 8px color-mix(in oklch, currentColor 35%, transparent)); } .ds-hex-icon { position: relative; } .ds-course-name { margin: 4px 0 0; font-size: 0.92rem; font-weight: 600; line-height: 1.375; color: var(--foreground, oklch(0.24 0.025 270)); } .ds-course-meta { margin: 0; font-size: 0.74rem; opacity: 0.85; } .ds-pill-on-tint { margin-top: 4px; height: 32px; padding: 0 14px; border: 0; border-radius: 9999px; background: var(--background, #fff); color: var(--foreground, oklch(0.24 0.025 270)); font: 500 0.8rem Poppins, ui-sans-serif, sans-serif; box-shadow: 0 1px 2px oklch(0.3 0.03 270 / 4%), 0 8px 24px -12px oklch(0.3 0.03 270 / 12%); cursor: pointer; } .ds-pill-on-tint:hover { background: color-mix(in oklch, var(--background, #fff) 85%, transparent); } .ds-pill-on-tint:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring, oklch(0.645 0.19 40)) 50%, transparent); }"
+    },
+    {
+      "name": "Section Title",
+      "kind": "custom",
+      "refersTo": "title",
+      "description": "The signature full stop after every page and section title.",
+      "html": "<h2 class=\"ds-title\">Fənlərim</h2>",
+      "css": ".ds-title { margin: 0; font-family: Poppins, ui-sans-serif, system-ui, sans-serif; font-size: 1.2rem; font-weight: 600; line-height: 1.25; letter-spacing: -0.02em; color: var(--foreground, oklch(0.24 0.025 270)); } .ds-title::after { content: '.'; color: var(--primary, oklch(0.645 0.19 40)); margin-left: 0.06em; }"
+    },
+    {
+      "name": "SiriUs Launcher",
+      "kind": "custom",
+      "refersTo": "ember-orange",
+      "description": "Signature assistant: breathing orange blob with blinking eyes and the idle greeting bubble.",
+      "html": "<div class=\"ds-launcher\"><div class=\"ds-bubble\">Sizə necə kömək edə bilərəm?</div><button class=\"ds-blob\" aria-label=\"SiriUs AI köməkçini aç\"><svg viewBox=\"0 0 40 40\"><g class=\"ds-eyes\" fill=\"#fff\"><rect x=\"13.2\" y=\"15\" width=\"4.2\" height=\"8\" rx=\"2.1\"/><rect x=\"22.6\" y=\"15\" width=\"4.2\" height=\"8\" rx=\"2.1\"/></g></svg></button></div>",
+      "css": ".ds-launcher { display: flex; align-items: flex-end; gap: 12px; font-family: Poppins, ui-sans-serif, system-ui, sans-serif; } .ds-bubble { margin-bottom: 8px; padding: 8px 16px; border-radius: 1.35rem 1.35rem 0.45rem 1.35rem; background: var(--popover, #fff); color: var(--popover-foreground, oklch(0.24 0.025 270)); font-size: 0.84rem; font-weight: 500; box-shadow: 0 0 0 1px var(--border, oklch(0.925 0.008 275)), 0 2px 4px oklch(0.3 0.03 270 / 5%), 0 18px 40px -18px oklch(0.3 0.03 270 / 22%); animation: ds-bubble-in 320ms cubic-bezier(0.16, 1, 0.3, 1) both; } .ds-blob { position: relative; width: 60px; height: 60px; padding: 0; border: 0; cursor: pointer; background: radial-gradient(circle at 32% 26%, oklch(0.82 0.13 62), var(--primary, oklch(0.645 0.19 40)) 56%, oklch(0.55 0.19 32)); box-shadow: 0 10px 24px -8px var(--primary, oklch(0.645 0.19 40)); animation: ds-blob 9s ease-in-out infinite; transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-blob svg { position: absolute; inset: 0; width: 100%; height: 100%; } .ds-eyes { transform-box: fill-box; transform-origin: center; animation: ds-blink 5.5s ease-in-out infinite; } .ds-blob:hover { transform: scale(1.06); } .ds-blob:active { transform: scale(0.95); } .ds-blob:focus-visible { outline: none; box-shadow: 0 0 0 4px color-mix(in oklch, var(--ring, oklch(0.645 0.19 40)) 40%, transparent); } @keyframes ds-blob { 0%, 100% { border-radius: 58% 42% 50% 50% / 50% 55% 45% 50%; } 33% { border-radius: 45% 55% 42% 58% / 58% 45% 55% 42%; } 66% { border-radius: 52% 48% 60% 40% / 42% 58% 42% 58%; } } @keyframes ds-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.12); } } @keyframes ds-bubble-in { from { opacity: 0; transform: translateY(6px) scale(0.96); } to { opacity: 1; transform: none; } } @media (prefers-reduced-motion: reduce) { .ds-blob, .ds-eyes, .ds-bubble { animation: none; } .ds-blob { border-radius: 50%; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Calm Campus Planner",
+    "overview": "UniLMS reads like a well-kept paper planner laid on a cool desk. A soft grey-lavender ground holds one white working panel inset beside a light sidebar; inside the panel, pale pastel tiles carry each course, and a single ember-orange accent marks the one thing that matters on the screen: the primary action, the active place, today's date, and the full stop after every title. Nothing shouts. Density is moderate: dashboards breathe, while gradebooks and admin tables tighten without changing identity.\n\nThe world is friendly rather than institutional. Rounded geometry (pill buttons, generously rounded cards, soft hexagon badges), Poppins throughout, navy-ink text instead of black, and shadows so diffuse they read as air rather than elevation. It deliberately refuses the navy-sidebar, blue-gradient-hero admin template the product shipped before. The same language serves students, teachers and administrators; only density changes. Everything is written in Azerbaijani, and every face carries ə Ə ğ ı İ ş ç ö ü.\n\nTwo signatures make it recognisable: the orange full stop that closes every page and section title, and SiriUs, a slowly breathing orange blob with two blinking eyes that floats in the bottom-right corner of every signed-in page.",
+    "keyCharacteristics": [
+      "Cool grey-lavender ground, white inset panel, hairline rings, near-invisible shadows.",
+      "One ember-orange accent, used sparingly for action, place and punctuation.",
+      "Six pastel course tints, each a pale field + saturated mark + readable ink triple.",
+      "Poppins for everything; JetBrains Mono only for codes and tabular figures in dense data cells.",
+      "Pills and soft corners everywhere; hexagon badges as the category mark.",
+      "Full light and dark themes from the same token names."
+    ],
+    "rules": [
+      {
+        "name": "The One Ember Rule",
+        "body": "Orange is the only saturated non-course colour on a screen. It marks action, place, today, and punctuation; it never fills a card or a header band.",
+        "section": "colors"
+      },
+      {
+        "name": "The Dealt Tint Rule",
+        "body": "Courses are dealt tints in alphabetical order (Azerbaijani collation) from mint, butter, lavender, rose, sky, so neighbouring courses never repeat and a course keeps its colour across cards, timetable blocks and list marks. Peach is never dealt to a course because it competes with the orange accent.",
+        "section": "colors"
+      },
+      {
+        "name": "The Triple Rule",
+        "body": "A tint is always used as its triple: field behind, mark for the badge, ink for text on the field. Never put body text in a mark colour or a mark on a different family's field.",
+        "section": "colors"
+      },
+      {
+        "name": "The Full Stop Rule",
+        "body": "Every page title, section title, sidebar group label and the wordmark ends in an orange full stop (the `title-dot` treatment: a \".\" in the primary colour, 0.06em gap). It is punctuation, not decoration, so it never appears on body text, buttons or card titles.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Family Rule",
+        "body": "Poppins is the only display and text face. Mono is reserved for machine values (codes, IDs, numeric cells); never for headings or prose.",
+        "section": "typography"
+      },
+      {
+        "name": "The Air, Not Weight Rule",
+        "body": "Shadows are soft, wide and low-opacity, always navy- or hue-tinted, never black and never hard-offset. A surface that needs more separation gets a hairline ring, not a darker shadow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** end every page title, section title and sidebar group label with the orange full stop.",
+      "**Do** deal course tints through the shared tint provider so a course keeps one colour everywhere, using the full triple (field, mark, ink).",
+      "**Do** keep orange to action, place, today and punctuation; use ember wash and ember ink for the quieter states.",
+      "**Do** use pill shapes for every button, chip and status, and 2xl corners for cards and tiles.",
+      "**Do** keep shadows to Soft and Lift; separate surfaces with a hairline ring first.",
+      "**Do** write all copy in Azerbaijani and check any new face for ə Ə ğ ı İ ş ç ö ü.",
+      "**Do** keep 112px of bottom clearance on app pages so SiriUs never covers content, and drop all looping motion under reduced motion.",
+      "**Do** define every colour in both light and dark themes under the same token name."
+    ],
+    "donts": [
+      "**Don't** bring back the navy sidebar, blue gradients or a gradient hero band.",
+      "**Don't** deal peach to a course; it is reserved for stat tiles and grade E.",
+      "**Don't** add a second accent hue or fill a whole card or header with orange.",
+      "**Don't** use black or hard-offset shadows.",
+      "**Don't** set headings or prose in JetBrains Mono, or introduce a second display face.",
+      "**Don't** add small uppercase eyebrow labels above titles; hierarchy comes from size, weight and the full stop.",
+      "**Don't** put the full stop on buttons, card titles or body text."
+    ]
+  }
+}

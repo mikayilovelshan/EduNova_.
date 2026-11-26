@@ -63,9 +63,19 @@ namespace UniLMS.Persistence.Services
             return new SuccessResult("Dərs cədvəli uğurla əlavə edildi.");
         }
 
-        public async Task<IDataResult<List<GetCourseScheduleDTO>>> GetAllAsync()
+        private static IQueryable<CourseSchedule> ScopeToUser(IQueryable<CourseSchedule> query, Guid? studentAppUserId, Guid? teacherAppUserId)
         {
-            var courseSchedule = await _courseScheduleRead.GetAll(tracking: false)
+            if (studentAppUserId.HasValue)
+                return query.Where(x => x.CourseOffering.Group.Students.Any(s => s.AppUserId == studentAppUserId.Value));
+            if (teacherAppUserId.HasValue)
+                return query.Where(x => x.CourseOffering.Teacher.AppUserId == teacherAppUserId.Value);
+            return query;
+        }
+
+        public async Task<IDataResult<List<GetCourseScheduleDTO>>> GetAllAsync(Guid? studentAppUserId = null, Guid? teacherAppUserId = null)
+        {
+            var courseSchedule = await ScopeToUser(_courseScheduleRead.GetAll(tracking: false), studentAppUserId, teacherAppUserId)
+                .OrderBy(x => x.DayOfWeek).ThenBy(x => x.StartTime)
                 .Include(x => x.CourseOffering)
                     .ThenInclude(x => x.Group)
                 .Include(x => x.CourseOffering)
@@ -80,9 +90,9 @@ namespace UniLMS.Persistence.Services
             return new SuccessDataResult<List<GetCourseScheduleDTO>>(dtos);
         }
 
-        public async Task<IDataResult<GetCourseScheduleDTO>> GetByIdAsync(Guid id)
+        public async Task<IDataResult<GetCourseScheduleDTO>> GetByIdAsync(Guid id, Guid? studentAppUserId = null, Guid? teacherAppUserId = null)
         {
-            var courseSchedule = await _courseScheduleRead.GetWhere(x => x.Id == id, tracking : false)
+            var courseSchedule = await ScopeToUser(_courseScheduleRead.GetWhere(x => x.Id == id, tracking : false), studentAppUserId, teacherAppUserId)
                 .Include(x => x.CourseOffering)
                     .ThenInclude(x => x.Group)
                 .Include(x => x.CourseOffering)

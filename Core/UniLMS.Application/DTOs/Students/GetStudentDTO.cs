@@ -18,9 +18,9 @@ namespace UniLMS.Application.DTOs.Students
 
         public decimal GPA { get; set; }    
 
-        public Guid GroupId { get; set; }   
+        public Guid? GroupId { get; set; }
 
-        public string GroupCode { get; set; }   
+        public string? GroupCode { get; set; }
 
     }
 }

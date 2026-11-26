@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace UniLMS.Application.DTOs.Attendance
 {
+    /// <summary>
+    /// One lesson session (a course schedule slot on a concrete date) with the attendance of every student recorded for it.
+    /// </summary>
     public class GetAttendanceDTO
     {
         public Guid CourseScheduleId { get; set; }
+
+        public Guid CourseOfferingId { get; set; }
 
         public string CourseName { get; set; }
 
@@ -14,6 +15,10 @@ namespace UniLMS.Application.DTOs.Attendance
 
         public DateTime Date { get; set; }
 
-        public List<GetStudentAttendanceDTO> Students { get; set; }
+        public TimeSpan StartTime { get; set; }
+
+        public TimeSpan EndTime { get; set; }
+
+        public List<GetStudentAttendanceDTO> Students { get; set; } = new();
     }
 }

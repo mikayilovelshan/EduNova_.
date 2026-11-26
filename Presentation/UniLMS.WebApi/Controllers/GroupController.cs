@@ -44,6 +44,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Teacher")]
         public async Task<IActionResult> GetAll()
         {
             var result = await _groupService.GetAllAsync();
@@ -51,6 +52,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpGet("id")]
+        [Authorize(Roles = "Admin,Teacher")]
         public async Task<IActionResult> GetById(Guid id)
         {
             var result = await _groupService.GetByIdAsync(id);

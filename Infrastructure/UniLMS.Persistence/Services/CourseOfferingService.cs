@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using UniLMS.Domain.Entities;
 using UniLMS.Application.DTOs.CourseOfferings;
+using UniLMS.Application.DTOs.Groups;
 using UniLMS.Application.Interfaces.Services;
 using UniLMS.Application.Repositories.CourseOfferingRepository;
 using UniLMS.Application.Repositories.CourseRepository;
@@ -62,9 +63,35 @@ namespace UniLMS.Persistence.Services
         }
         
 
-        public async Task<IDataResult<List<GetCourseOfferingDTO>>> GetAllAsync()
+        public async Task<IDataResult<List<GroupStudentDTO>>> GetStudentsAsync(Guid courseOfferingId)
         {
-            var courseOfferings = await _courseOfferingRead.GetAll(tracking : false)
+            var students = await _courseOfferingRead.GetWhere(x => x.Id == courseOfferingId, tracking: false)
+                .SelectMany(x => x.Group.Students)
+                .Where(x => !x.IsDeleted)
+                .OrderBy(x => x.AppUser.LastName).ThenBy(x => x.AppUser.FirstName)
+                .Select(x => new GroupStudentDTO
+                {
+                    Id = x.Id,
+                    StudentNumber = x.StudentNumber,
+                    FullName = x.AppUser.FirstName + " " + x.AppUser.LastName
+                })
+                .ToListAsync();
+
+            return new SuccessDataResult<List<GroupStudentDTO>>(students);
+        }
+
+        private IQueryable<CourseOffering> ScopeToUser(IQueryable<CourseOffering> query, Guid? studentAppUserId, Guid? teacherAppUserId)
+        {
+            if (studentAppUserId.HasValue)
+                return query.Where(x => x.Group.Students.Any(s => s.AppUserId == studentAppUserId.Value));
+            if (teacherAppUserId.HasValue)
+                return query.Where(x => x.Teacher.AppUserId == teacherAppUserId.Value);
+            return query;
+        }
+
+        public async Task<IDataResult<List<GetCourseOfferingDTO>>> GetAllAsync(Guid? studentAppUserId = null, Guid? teacherAppUserId = null)
+        {
+            var courseOfferings = await ScopeToUser(_courseOfferingRead.GetAll(tracking : false), studentAppUserId, teacherAppUserId)
                 .Include(s => s.Semester)
                 .Include(c => c.Course)
                      .Include(t => t.Teacher)
@@ -79,9 +106,9 @@ namespace UniLMS.Persistence.Services
 
         }
 
-        public async Task<IDataResult<GetCourseOfferingDTO>> GetByIdAsync(Guid id)
+        public async Task<IDataResult<GetCourseOfferingDTO>> GetByIdAsync(Guid id, Guid? studentAppUserId = null, Guid? teacherAppUserId = null)
         {
-             var courseOffering = await _courseOfferingRead.GetWhere(s => s.Id == id, tracking: false)
+             var courseOffering = await ScopeToUser(_courseOfferingRead.GetWhere(s => s.Id == id, tracking: false), studentAppUserId, teacherAppUserId)
                    .Include(s => s.Semester)
                     .Include(c => c.Course)
                      .Include(t => t.Teacher)

@@ -7,11 +7,13 @@ using UniLMS.Application.DTOs.Auth;
 using UniLMS.Application.Interfaces.Services;
 using UniLMS.Application.Utilities.Results;
 using UniLMS.Domain.Entities;
+using UniLMS.Persistence.Contexts;
 
 namespace UniLMS.Persistence.Services
 {
     public class AuthService(UserManager<AppUser> _userManager,
-        ITokenService _tokenService) : IAuthService
+        ITokenService _tokenService,
+        AppDbContext _context) : IAuthService
     {
         public async Task<IDataResult<TokenResponseDTO>> Login(LoginDTO model)
         {
@@ -24,6 +26,9 @@ namespace UniLMS.Persistence.Services
 
             if (!result)
                 return new ErrorDataResult<TokenResponseDTO>("Email və ya şifrə yanlışdır.");
+
+            if (await IsDeactivatedAsync(user.Id))
+                return new ErrorDataResult<TokenResponseDTO>("Hesabınız deaktiv edilib. Universitet administrasiyası ilə əlaqə saxlayın.");
             
 
             var accessToken = _tokenService.CreateAccessToken(user);
@@ -56,7 +61,7 @@ namespace UniLMS.Persistence.Services
             if (user == null)
                 return new ErrorDataResult<TokenResponseDTO>("İstifadəçi tapılmadı");
 
-            if (!user.RefreshTokenEndDate.HasValue || user.RefreshTokenEndDate.Value <= DateTime.UtcNow)
+            if (!user.RefreshTokenEndDate.HasValue || user.RefreshTokenEndDate.Value <= DateTime.UtcNow || await IsDeactivatedAsync(user.Id))
                 return new ErrorDataResult<TokenResponseDTO>("Yenidən login olmalısız");
 
             var accessToken = _tokenService.CreateAccessToken(user);
@@ -88,16 +93,21 @@ namespace UniLMS.Persistence.Services
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
-                return new ErrorResult("Hesab yaradıla bilmədi");
+                return new ErrorResult("Hesab yaradıla bilmədi: " + string.Join(" ", result.Errors.Select(e => e.Description)));
 
-            var roleResult = await _userManager.AddToRoleAsync(user, "Student");
+            var roleResult = await _userManager.AddToRoleAsync(user, "Admin");
             if (!roleResult.Succeeded)
             {
                 await _userManager.DeleteAsync(user);
-                return new ErrorResult("Student rolu təyin edilə bilmədi.");
+                return new ErrorResult("Admin rolu təyin edilə bilmədi.");
             }
 
             return new SuccessResult("Hesab uğurla yaradıldı");
         }
+    
+        /// <summary>A soft-deleted (deactivated) student or teacher must not be able to sign in.</summary>
+        private async Task<bool> IsDeactivatedAsync(Guid appUserId)
+            => await _context.Students.IgnoreQueryFilters().AnyAsync(x => x.AppUserId == appUserId && x.IsDeleted)
+            || await _context.Teachers.IgnoreQueryFilters().AnyAsync(x => x.AppUserId == appUserId && x.IsDeleted);
     }
 }

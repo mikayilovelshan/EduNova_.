@@ -12,6 +12,7 @@ namespace UniLMS.WebApi.Controllers
     public class SpecialityController(ISpecialityService _specialityService) : ControllerBase
     {
         [HttpPost("create")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateSpecialityDTO model)
         {
             var result = await _specialityService.CreateAsync(model);
@@ -19,6 +20,7 @@ namespace UniLMS.WebApi.Controllers
         }
 
         [HttpPut("update")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update([FromBody] UpdateSpecialityDTO model)
         {
             var result = await _specialityService.UpdateAsync(model);

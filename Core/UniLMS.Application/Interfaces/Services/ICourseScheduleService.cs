@@ -8,9 +8,9 @@ namespace UniLMS.Application.Interfaces.Services
 {
     public interface ICourseScheduleService
     {
-        Task<IDataResult<List<GetCourseScheduleDTO>>> GetAllAsync();
+        Task<IDataResult<List<GetCourseScheduleDTO>>> GetAllAsync(Guid? studentAppUserId = null, Guid? teacherAppUserId = null);
 
-        Task<IDataResult<GetCourseScheduleDTO>> GetByIdAsync(Guid id);
+        Task<IDataResult<GetCourseScheduleDTO>> GetByIdAsync(Guid id, Guid? studentAppUserId = null, Guid? teacherAppUserId = null);
 
         Task<IResult> CreateAsync(CreateCourseScheduleDTO model);
 

@@ -39,7 +39,10 @@ builder.Services.AddCourseSchedulePersistenceService();
 builder.Services.AddAttendancePersistenceService();
 builder.Services.AddExamResultPersistenceService();
 builder.Services.AddFileServerPersistenceService();
-builder.Services.AddHttpClient<IChatService, ChatService>();
+// AI assistant: OpenRouter chat + local retrieval over course materials (see ChatService / Rag).
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<UniLMS.Infrastructure.Rag.MaterialRetriever>();
+builder.Services.AddHttpClient<IChatService, ChatService>(client => client.Timeout = TimeSpan.FromSeconds(90));
 builder.Services.AddScoped<IChatRepository, ChatRepository>();
 builder.Services.AddApplicationService();
 
@@ -81,7 +84,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:8080", "http://localhost:5032", "https://lovable.dev") // <--- "http://localhost:8080" bura əlavə olunur
+        policy.WithOrigins("http://localhost:3000", "http://localhost:8080", "http://localhost:5032")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -91,7 +94,7 @@ var app = builder.Build();
 
 app.UseGlobalExceptionMiddleware();
 
-await app.SeedRolesAsync();
+await app.InitializeDatabaseAsync();
 
 if (app.Environment.IsDevelopment())
 {

@@ -13,6 +13,7 @@ namespace UniLMS.WebApi.Controllers
     public class CafedraController(ICafedraService _cafedraService) : ControllerBase
     {
         [HttpPost("create")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateCafedraDTO model)
         {
             var result = await _cafedraService.CreateAsync(model);

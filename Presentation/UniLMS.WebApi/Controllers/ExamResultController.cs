@@ -90,6 +90,34 @@ namespace UniLMS.WebApi.Controllers
             return BadRequest(result);
         }
 
+        /// <summary>Grade summaries of the signed-in student for every course of their group.</summary>
+        [HttpGet("my-summaries")]
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> GetMySummaries()
+        {
+            if (!TryGetAuthenticatedUserId(out var appUserId))
+                return Unauthorized();
+
+            var result = await _examResultService.GetMySummariesAsync(appUserId);
+            return result.Success ? Ok(result) : NotFound(result);
+        }
+
+        /// <summary>Gradebook: grade summary of every student of a course offering.</summary>
+        [HttpGet("offering-summaries")]
+        [Authorize(Roles = "Admin,Teacher")]
+        public async Task<IActionResult> GetOfferingSummaries([FromQuery] Guid courseOfferingId)
+        {
+            if (!await _ownershipService.CourseOfferingExistsAsync(courseOfferingId))
+                return NotFound();
+
+            if (!User.IsInRole("Admin") && (!TryGetAuthenticatedUserId(out var appUserId) ||
+                !await _ownershipService.CanManageCourseOfferingAsync(courseOfferingId, appUserId)))
+                return Forbid();
+
+            var result = await _examResultService.GetCourseOfferingSummariesAsync(courseOfferingId);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
         [HttpPost("create-range")]
         [Authorize(Roles = "Admin,Teacher")]
         public async Task<IActionResult> CreateRange([FromBody] CreateExamResultRangeDTO model)

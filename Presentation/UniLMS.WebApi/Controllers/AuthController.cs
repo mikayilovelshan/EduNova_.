@@ -1,19 +1,26 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using UniLMS.Application.DTOs.Auth;
 using UniLMS.Application.Interfaces.Services;
 using UniLMS.Domain.Entities;
+using UniLMS.Persistence.Contexts;
+using UniLMS.WebApi.Extensions;
 
 namespace UniLMS.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController(IAuthService _authService, UserManager<AppUser> _userManager) : ControllerBase
+    public class AuthController(IAuthService _authService, UserManager<AppUser> _userManager, AppDbContext _context) : ControllerBase
     {
+        /// <summary>
+        /// Creates an additional administrator account. Students and teachers are provisioned with their
+        /// academic profile through /Student/create and /Teacher/create, so open self-registration
+        /// (which produced Student-role users without a student profile) is no longer allowed.
+        /// </summary>
         [HttpPost("register")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO model)
         {
             var result = await _authService.Register(model);
@@ -41,22 +48,50 @@ namespace UniLMS.WebApi.Controllers
         [HttpGet("me")]
         public async Task<IActionResult> Me()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userId, out var id))
+            if (!User.TryGetAppUserId(out var id))
                 return Unauthorized();
 
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
                 return NotFound();
 
-            return Ok(new
+            var dto = new CurrentUserDTO
             {
-                user.Id,
-                user.Email,
-                user.FirstName,
-                user.LastName,
+                Id = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 Roles = await _userManager.GetRolesAsync(user)
-            });
+            };
+
+            var student = await _context.Students.AsNoTracking()
+                .Where(x => x.AppUserId == id)
+                .Select(x => new { x.Id, x.StudentNumber, x.GPA, x.GroupId, GroupCode = x.Group != null ? x.Group.Code : null, SpecialityName = x.Group != null ? x.Group.Speciality.Name : null })
+                .FirstOrDefaultAsync();
+
+            if (student != null)
+            {
+                dto.StudentId = student.Id;
+                dto.StudentNumber = student.StudentNumber;
+                dto.GPA = student.GPA;
+                dto.GroupId = student.GroupId;
+                dto.GroupCode = student.GroupCode;
+                dto.SpecialityName = student.SpecialityName;
+            }
+
+            var teacher = await _context.Teachers.AsNoTracking()
+                .Where(x => x.AppUserId == id)
+                .Select(x => new { x.Id, x.ScientificDegree, CafedraName = x.Cafedra.Name })
+                .FirstOrDefaultAsync();
+
+            if (teacher != null)
+            {
+                dto.TeacherId = teacher.Id;
+                dto.ScientificDegree = teacher.ScientificDegree;
+                dto.CafedraName = teacher.CafedraName;
+            }
+
+            return Ok(dto);
         }
     }
 }

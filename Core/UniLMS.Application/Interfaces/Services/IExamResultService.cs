@@ -17,6 +17,10 @@ namespace UniLMS.Application.Interfaces.Services
 
         Task<IDataResult<StudentCourseDetailedReportDTO>> GetStudentCourseDetailedReport(Guid studentId, Guid courseOfferingId);
 
+        Task<IDataResult<List<StudentExamResultSummaryDTO>>> GetMySummariesAsync(Guid studentAppUserId);
+
+        Task<IDataResult<List<StudentExamResultSummaryDTO>>> GetCourseOfferingSummariesAsync(Guid courseOfferingId);
+
         Task<IResult> CreateRangeAsync(CreateExamResultRangeDTO model);
 
         Task<IResult> UpdateAsync(UpdateExamResultDTO model);

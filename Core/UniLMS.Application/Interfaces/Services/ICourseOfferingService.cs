@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 using UniLMS.Application.DTOs.CourseOfferings;
+using UniLMS.Application.DTOs.Groups;
 using UniLMS.Application.Utilities.Results;
 
 namespace UniLMS.Application.Interfaces.Services
 {
     public interface ICourseOfferingService
     {
-        Task<IDataResult<List<GetCourseOfferingDTO>>> GetAllAsync();
+        Task<IDataResult<List<GetCourseOfferingDTO>>> GetAllAsync(Guid? studentAppUserId = null, Guid? teacherAppUserId = null);
 
-        Task<IDataResult<GetCourseOfferingDTO>> GetByIdAsync(Guid id);
+        Task<IDataResult<List<GroupStudentDTO>>> GetStudentsAsync(Guid courseOfferingId);
+
+        Task<IDataResult<GetCourseOfferingDTO>> GetByIdAsync(Guid id, Guid? studentAppUserId = null, Guid? teacherAppUserId = null);
 
         Task<IResult> CreateAsync(CreateCourseOfferingDTO model);
 

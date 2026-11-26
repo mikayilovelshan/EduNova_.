@@ -30,7 +30,7 @@ namespace UniLMS.WebApi.Controllers
                 var material = new CourseMaterial
                 {
                     Title = model.Title,
-                    Description = model.Description,
+                    Description = model.Description ?? string.Empty,
                     CourseId = model.CourseId,
                     FileName = model.File.FileName,
                     FilePath = uploadResult,
@@ -74,15 +74,18 @@ namespace UniLMS.WebApi.Controllers
             if (fileResult == null)
                 return NotFound("Fayl tapılmadı və ya artıq silinib.");
 
-            var (fileStream, contentType, fileName) = fileResult.Value;
+            var (fileStream, contentType, _) = fileResult.Value;
 
-            return File(fileStream, contentType, fileName);
+            // Serve the file under the name it was uploaded with, not the GUID name it is stored under.
+            return File(fileStream, contentType, material.FileName);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] Guid? courseId = null)
         {
             var materials = _context.CourseMaterials.AsNoTracking();
+            if (courseId.HasValue)
+                materials = materials.Where(x => x.CourseId == courseId.Value);
             if (User.IsInRole("Student") || User.IsInRole("Teacher"))
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -111,9 +114,14 @@ namespace UniLMS.WebApi.Controllers
                 x.Title,
                 x.Description,
                 x.CourseId,
+                CourseName = x.Course.Name,
+                CourseCode = x.Course.Code,
                 x.FileName,
+                x.FilePath,
                 x.CreatedDate
-            }).ToListAsync());
+            })
+            .OrderByDescending(x => x.CreatedDate)
+            .ToListAsync());
         }
 
         [HttpDelete("delete")]
